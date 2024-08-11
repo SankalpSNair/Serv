@@ -1,0 +1,8 @@
+Super user credentials
+
+username: Super123
+pass: Super@123
+
+
+
+http://127.0.0.1:8000/social-auth/complete/google-oauth2/

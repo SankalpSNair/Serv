@@ -1,0 +1,60 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Your Bookings</title>
+    <!-- Add your CSS files here -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
+    <style>
+        .booking-card {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+        }
+        .btn-home {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            text-align: center;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+        .btn-home:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Your Bookings</h2>
+        {% if bookings %}
+            <div class="row">
+                {% for booking in bookings %}
+                    <div class="col-lg-4 col-md-6 col-sm-12">
+                        <div class="booking-card">
+                            <h4>{{ booking.worker_type }}</h4>
+                            <p>Worker Name: {{ booking.worker_id.firstname }} {{ booking.worker_id.lastname }}</p>
+                            <p>Worker Phone: {{ booking.worker_id.phone }}</p>
+                            <p>Appointment Date: {{ booking.appointment_date }}</p>
+                            <p>Appointment Time: {{ booking.appointment_time }}</p>
+                            <p>Address: {{ booking.address }}</p>
+                            <p>Status: {{ booking.status }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>You have no bookings yet.</p>
+        {% endif %}
+        
+        <!-- Button to redirect to the home page -->
+        <a href="{% url 'home' %}" class="btn-home">Go to Home</a>
+    </div>
+</body>
+</html>

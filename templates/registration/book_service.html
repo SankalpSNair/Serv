@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Service</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 50%;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input[type="date"],
+        input[type="time"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        textarea {
+            resize: none;
+        }
+
+        .main-button {
+            width: 100%;
+            padding: 10px;
+            font-size: 18px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .main-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Book Service with {{ maid.firstname }} {{ maid.lastname }}</h2>
+        
+        <form method="post" action="">
+            {% csrf_token %}
+            
+            <!-- Appointment Date -->
+            <label for="appointment_date">Appointment Date:</label>
+            <input type="date" id="appointment_date" name="appointment_date" required>
+            
+            <!-- Appointment Time -->
+            <label for="appointment_time">Appointment Time:</label>
+            <input type="time" id="appointment_time" name="appointment_time" required>
+            
+            <!-- Address -->
+            <label for="address">Address:</label>
+            <textarea id="address" name="address" rows="3" required></textarea>
+            
+            <!-- Submit Button -->
+            <button type="submit" class="main-button">Confirm Booking</button>
+        </form>
+    </div>
+</body>
+</html>

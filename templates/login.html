@@ -1,0 +1,109 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Sign In</title>
+
+    <!-- Font Icon -->
+    <link rel="stylesheet" href="{% static 'fonts/material-icon/css/material-design-iconic-font.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        .main {
+            padding: 80px;
+        }
+        .header {
+            background-color: #f8f9fa;
+            padding-left: 10px;
+            text-align: left;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        html, body {
+            overflow: hidden;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        .forgot-password {
+            display: block;
+            text-align: right;
+            margin-top: 5px;
+            margin-bottom: -10px;
+        }
+        label {
+            font-size: 20px;
+            padding-bottom: 18px;
+        }
+        input {
+            padding-left: 0px;
+            font-size: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>ServEase</h2>
+    </div>
+    <div class="main">
+        <section class="sign-in">
+            <div class="container">
+                <div class="signin-content">
+                    <div class="signin-image">
+                        <figure><img src="{% static 'images/signin-image.jpg' %}" alt="sign in image"></figure>
+                        <a href="{% url 'signup' %}" class="signup-image-link" style="text-decoration: none; font-size: 16px;"><strong>Create an account</strong></a>
+                    </div>
+                    <div class="signin-form">
+                        <h2 class="form-title">Log In</h2>
+                        <form method="POST" class="register-form" id="login-form" action="{%url 'login'%}">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="username"><i class="zmdi zmdi-email"> Username / Email</i></label><br><br>
+                                <input type="email" name="username" id="username" placeholder="type here..."/>
+                            </div>
+                            <div class="form-group">
+                                <label for="password"><i class="zmdi zmdi-lock"> Password</i></label><br><br>
+                                <input type="password" name="password" id="password" placeholder="type here..."/>
+                            </div>
+                            <div class="forgot-password">
+                                <a href="{% url 'custom_password_reset' %}" style="font-size: 16px;">Forgot Password?</a>
+                            </div>
+                            <div class="form-group form-button">
+                                <input type="submit" name="signin" id="signin" class="form-submit" value="Log in"/>
+                            </div>
+                        </form>
+                        <div class="social-login">
+                            <span class="social-label" style="font-size: 18px;">Or login with Google</span>
+                            <ul class="socials">
+                                <li><a href="{% url 'social:begin' 'google-oauth2' %}"><i class="display-flex-center zmdi zmdi-google"></i></a></li>
+                                <!-- <li><a href="#"><i class="display-flex-center zmdi zmdi-facebook"></i></a></li> -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- JS -->
+    <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        {% if messages %}
+            {% for message in messages %}
+                Swal.fire({
+                    icon: "{{ message.tags|default:'info' }}",
+                    title: "{{ message|escapejs }}",
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+            {% endfor %}
+        {% endif %}
+    </script>
+    
+</body>
+</html>

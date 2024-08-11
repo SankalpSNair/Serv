@@ -23,6 +23,11 @@ path('admin/', admin.site.urls),
     path('full_workers/', views.Full_workersPage, name='full_workers'),
     path('manage_customers/', views.Manage_Customers, name='manage_customers'),
     path('change_status/<int:user_id>/', views.change_status, name='change_status'),
+    path('manage_house_maids/', views.manage_house_maids, name='manage_house_maids'),
+    path('edit_house_maid/<int:maid_id>/', views.edit_house_maid, name='edit_house_maid'),
+    path('manage_home_nurses/', views.manage_home_nurses, name='manage_home_nurses'),
+    path('edit_home_nurse/<int:nurse_id>/', views.edit_home_nurse, name='edit_home_nurse'),
+    
 
 # admin side end
     path('update_profile/', views.update_profile, name='update_profile'),

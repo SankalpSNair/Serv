@@ -39,7 +39,7 @@ class House_Maid(models.Model):
 
 class Home_Nurse(models.Model):
     nurse_id = models.AutoField(primary_key=True)
-    usertype = models.ForeignKey(Users, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
     skill_id = models.ForeignKey(Skill, on_delete=models.CASCADE)
     experience = models.IntegerField()
     availability = models.IntegerField(default=0)
@@ -54,7 +54,7 @@ class Home_Nurse(models.Model):
 
 class Carpenter(models.Model):
     carpenter_id = models.AutoField(primary_key=True)
-    usertype = models.ForeignKey(Users, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
     skill_id = models.ForeignKey(Skill, on_delete=models.CASCADE)
     experience = models.IntegerField()
     availability = models.IntegerField(default=0)
@@ -69,7 +69,7 @@ class Carpenter(models.Model):
 
 class Electrician(models.Model):
     electrician_id = models.AutoField(primary_key=True)
-    usertype = models.ForeignKey(Users, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
     skill_id = models.ForeignKey(Skill, on_delete=models.CASCADE)
     experience = models.IntegerField()
     availability = models.IntegerField(default=0)
@@ -84,7 +84,7 @@ class Electrician(models.Model):
 
 class Plumber(models.Model):
     plumber_id = models.AutoField(primary_key=True)
-    usertype = models.ForeignKey(Users, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
     skill_id = models.ForeignKey(Skill, on_delete=models.CASCADE)
     experience = models.IntegerField()
     availability = models.IntegerField(default=0)

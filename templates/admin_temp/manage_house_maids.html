@@ -128,14 +128,14 @@
                 <div class="page-title">
                     <div class="row">
                         <div class="col-12 col-md-6 order-md-1 order-last">
-                            <h3>All Users</h3>
+                            <h3>House Maids</h3>
                             <p class="text-subtitle text-muted">Listing the basic details</p>
                         </div>
                         <div class="col-12 col-md-6 order-md-2 order-first">
                             <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
                                 <ol class="breadcrumb">
                                     <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
-                                    <li class="breadcrumb-item active" aria-current="page">All Users</li>
+                                    <li class="breadcrumb-item active" aria-current="page">DataTable</li>
                                 </ol>
                             </nav>
                         </div>
@@ -144,7 +144,7 @@
                 <section class="section">
                     <div class="card">
                         <div class="card-header">
-                            View Only Data of All Users
+                            Manage House Maids
                         </div>
                         <div class="card-body">
                             <table class="table table-striped" id="table1">
@@ -153,28 +153,31 @@
                                         <th>Name</th>
                                         <th>Email</th>
                                         <th>Phone</th>
-                                        <th>City</th>
-                                        <th>Status</th>
+                                        <th>Experience</th>
+                                        <th>Availability</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for user in users %}
+                                    {% for maid in maids %}
                                     <tr>
-                                        <td>{{ user.firstname }} {{ user.lastname }}</td>
-                                        <td>{{ user.email }}</td>
-                                        <td>{{ user.phone }}</td>
-                                        <td>{{ user.place }}</td>
+                                        <td>{{ maid.firstname }} {{ maid.lastname }}</td>
+                                        <td>{{ maid.email }}</td>
+                                        <td>{{ maid.phone }}</td>
+                                        <td>{{ maid.experience }}</td>
                                         <td>
-                                            {% if user.availability %}
-                                                <span class="badge bg-success">Active</span>
+                                            {% if maid.availability %}
+                                                <span class="badge bg-success">Available</span>
                                             {% else %}
-                                                <span class="badge bg-danger">Inactive</span>
+                                                <span class="badge bg-danger">Not Available</span>
                                             {% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'edit_house_maid' maid.maid_id %}" class="btn btn-primary btn-sm">Edit</a> <!-- Edit button -->
                                         </td>
                                     </tr>
                                     {% empty %}
                                     <tr>
-                                        <td colspan="5">No workers found.</td> <!-- Adjusted colspan to match the number of columns -->
+                                        <td colspan="5">No house maids found.</td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>

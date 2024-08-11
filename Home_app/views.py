@@ -26,6 +26,9 @@ from django.contrib.auth.hashers import check_password
 
 # @login_required(login_url='login')
 # @login_required(login_url='login')
+
+# -------------------------  ADMIN SIDE ----------------------------- #
+
 def DashboardPage(request):
     total_users = Users.objects.count()  # Total number of users
     total_customers = Users.objects.filter(usertype='customer').count()  # Total number of customers
@@ -45,6 +48,77 @@ def Manage_Customers(request):
     customers = Users.objects.filter(usertype='customer')  
     return render(request, 'admin_temp/manage_customers.html',{'customers':customers})
 
+def manage_house_maids(request):
+    maids = House_Maid.objects.all()  # Fetch all house maids from the database
+    return render(request, 'admin_temp/manage_house_maids.html', {'maids': maids})
+
+def manage_home_nurses(request):
+    nurses = Home_Nurse.objects.all()  # Fetch all home nurses from the database
+    return render(request, 'admin_temp/manage_home_nurses.html', {'nurses': nurses})
+
+def edit_house_maid(request, maid_id):
+    maid = get_object_or_404(House_Maid, pk=maid_id)
+    user = get_object_or_404(Users, user_id=maid.user_id.user_id)
+
+    if request.method == 'POST':
+        # Retrieve data from the form
+        firstname = request.POST.get('firstname', '')
+        lastname = request.POST.get('lastname', '')
+        phone = request.POST.get('phone', '')
+        experience = request.POST.get('experience', '')
+        availability = request.POST.get('availability') == '1'  # Convert to boolean
+
+        # Update House_Maid fields
+        maid.firstname = firstname
+        maid.lastname = lastname
+        maid.phone = phone
+        maid.experience = experience
+        maid.availability = availability
+        maid.save()
+
+        # Update Users table fields
+        user.firstname = firstname
+        user.lastname = lastname
+        user.phone = phone
+        user.availability = availability
+        user.save()
+
+        return redirect('manage_house_maids')
+
+    return render(request, 'admin_temp/edit_house_maid.html', {'maid': maid})
+
+def edit_home_nurse(request, nurse_id):
+    nurse = get_object_or_404(Home_Nurse, pk=nurse_id)
+    user = get_object_or_404(Users, user_id=nurse.user_id.user_id)
+
+    if request.method == 'POST':
+        # Retrieve data from the form
+        firstname = request.POST.get('firstname', '')
+        lastname = request.POST.get('lastname', '')
+        phone = request.POST.get('phone', '')
+        experience = request.POST.get('experience', '')
+        availability = request.POST.get('availability') == '1'  # Convert to boolean
+
+        # Update Home_Nurse fields
+        nurse.firstname = firstname
+        nurse.lastname = lastname
+        nurse.phone = phone
+        nurse.experience = experience
+        nurse.availability = availability
+        nurse.save()
+
+        # Update Users table fields
+        user.firstname = firstname
+        user.lastname = lastname
+        user.phone = phone
+        user.availability = availability
+        user.save()
+
+        return redirect('manage_home_nurses')  # Redirect to the manage_home_nurses view
+
+    return render(request, 'admin_temp/edit_home_nurses.html', {'nurse': nurse})
+
+
 def change_status(request, user_id):
     customer = get_object_or_404(Users, user_id=user_id, usertype='customer')
     # Toggle the availability status
@@ -63,6 +137,8 @@ def Full_customersPage(request):
 def Full_workersPage(request):
     workers = Users.objects.exclude(usertype='customer') 
     return render(request, 'admin_temp/full_workers.html', {'workers': workers})
+
+# -------------------------  CUSTOMER SIDE ----------------------------- #
 
 @never_cache
 def HomePage(request):

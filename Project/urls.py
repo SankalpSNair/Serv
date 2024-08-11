@@ -21,7 +21,8 @@ path('admin/', admin.site.urls),
     path('full_users/', views.Full_usersPage, name='full_users'),
     path('full_customers/', views.Full_customersPage, name='full_customers'),
     path('full_workers/', views.Full_workersPage, name='full_workers'),
-
+    path('manage_customers/', views.Manage_Customers, name='manage_customers'),
+    path('change_status/<int:user_id>/', views.change_status, name='change_status'),
 
 # admin side end
     path('update_profile/', views.update_profile, name='update_profile'),

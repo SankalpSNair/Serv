@@ -27,13 +27,42 @@ from django.contrib.auth.hashers import check_password
 # @login_required(login_url='login')
 # @login_required(login_url='login')
 def DashboardPage(request):
-    return render(request, 'admin_temp/dashboard.html')
+    total_users = Users.objects.count()  # Total number of users
+    total_customers = Users.objects.filter(usertype='customer').count()  # Total number of customers
+    total_workers = Users.objects.exclude(usertype='customer').count()  # Total number of workers
+    total_bookings = Booking.objects.count()  # Total number of bookings
+    
+    context = {
+        'total_users': total_users,
+        'total_customers': total_customers,
+        'total_workers': total_workers,
+        'total_bookings': total_bookings
+    }
+    
+    return render(request, 'admin_temp/dashboard.html', context)
+
+def Manage_Customers(request):
+    customers = Users.objects.filter(usertype='customer')  
+    return render(request, 'admin_temp/manage_customers.html',{'customers':customers})
+
+def change_status(request, user_id):
+    customer = get_object_or_404(Users, user_id=user_id, usertype='customer')
+    # Toggle the availability status
+    customer.availability = not customer.availability
+    customer.save()
+    return redirect('manage_customers')
+
 def Full_usersPage(request):
-    return render(request, 'admin_temp/full_users.html')
+    users = Users.objects.all() 
+    return render(request, 'admin_temp/full_users.html', {'users': users})
+
 def Full_customersPage(request):
-    return render(request, 'admin_temp/full_customers.html')
+    customers = Users.objects.filter(usertype='customer')  
+    return render(request, 'admin_temp/full_customers.html', {'customers': customers})
+
 def Full_workersPage(request):
-    return render(request, 'admin_temp/full_workers.html')
+    workers = Users.objects.exclude(usertype='customer') 
+    return render(request, 'admin_temp/full_workers.html', {'workers': workers})
 
 @never_cache
 def HomePage(request):

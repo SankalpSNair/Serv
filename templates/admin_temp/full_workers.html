@@ -128,8 +128,8 @@
                 <div class="page-title">
                     <div class="row">
                         <div class="col-12 col-md-6 order-md-1 order-last">
-                            <h3>DataTable</h3>
-                            <p class="text-subtitle text-muted">For user to check they list</p>
+                            <h3>Workers</h3>
+                            <p class="text-subtitle text-muted">Listing the basic details</p>
                         </div>
                         <div class="col-12 col-md-6 order-md-2 order-first">
                             <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
@@ -144,7 +144,7 @@
                 <section class="section">
                     <div class="card">
                         <div class="card-header">
-                            Simple Datatable
+                            View Only Data of Workers
                         </div>
                         <div class="card-body">
                             <table class="table table-striped" id="table1">
@@ -152,126 +152,39 @@
                                     <tr>
                                         <th>Name</th>
                                         <th>Email</th>
+                                        <th>Worker Type</th>  <!-- Added column for Worker Type -->
                                         <th>Phone</th>
                                         <th>City</th>
                                         <th>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    {% for worker in workers %}  <!-- Changed loop variable to 'worker' and used 'workers' -->
                                     <tr>
-                                        <td>Ray</td>
-                                        <td>placerat.eget@sagittislobortis.edu</td>
-                                        <td>(0112) 896 6829</td>
-                                        <td>Hofors</td>
+                                        <td>{{ worker.firstname }} {{ worker.lastname }}</td>
+                                        <td>{{ worker.email }}</td>
+                                        <td>{{ worker.usertype }}</td>  <!-- Added Worker Type -->
+                                        <td>{{ worker.phone }}</td>
+                                        <td>{{ worker.place }}</td>
                                         <td>
-                                            <span class="badge bg-success">Active</span>
+                                            {% if worker.availability %}
+                                                <span class="badge bg-success">Active</span>
+                                            {% else %}
+                                                <span class="badge bg-danger">Inactive</span>
+                                            {% endif %}
                                         </td>
                                     </tr>
+                                    {% empty %}
                                     <tr>
-                                        <td>Maxwell</td>
-                                        <td>diam@dapibus.org</td>
-                                        <td>0334 836 4028</td>
-                                        <td>Thane</td>
-                                        <td>
-                                            <span class="badge bg-success">Active</span>
-                                        </td>
+                                        <td colspan="6">No workers found.</td>  <!-- Adjusted colspan to match the number of columns -->
                                     </tr>
-                                    <tr>
-                                        <td>Carter</td>
-                                        <td>urna.justo.faucibus@orci.com</td>
-                                        <td>07079 826350</td>
-                                        <td>Biez</td>
-                                        <td>
-                                            <span class="badge bg-success">Active</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Stone</td>
-                                        <td>velit.Aliquam.nisl@sitametrisus.com</td>
-                                        <td>0800 1111</td>
-                                        <td>Olivar</td>
-                                        <td>
-                                            <span class="badge bg-success">Active</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Berk</td>
-                                        <td>fringilla.porttitor.vulputate@taciti.edu</td>
-                                        <td>(0101) 043 2822</td>
-                                        <td>Sanquhar</td>
-                                        <td>
-                                            <span class="badge bg-success">Active</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Philip</td>
-                                        <td>turpis@euenimEtiam.org</td>
-                                        <td>0500 571108</td>
-                                        <td>Okara</td>
-                                        <td>
-                                            <span class="badge bg-success">Active</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Kibo</td>
-                                        <td>feugiat@urnajustofaucibus.co.uk</td>
-                                        <td>07624 682306</td>
-                                        <td>La Cisterna</td>
-                                        <td>
-                                            <span class="badge bg-success">Active</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Bruno</td>
-                                        <td>elit.Etiam.laoreet@luctuslobortisClass.edu</td>
-                                        <td>07624 869434</td>
-                                        <td>Rocca d"Arce</td>
-                                        <td>
-                                            <span class="badge bg-success">Active</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Leonard</td>
-                                        <td>blandit.enim.consequat@mollislectuspede.net</td>
-                                        <td>0800 1111</td>
-                                        <td>Lobbes</td>
-                                        <td>
-                                            <span class="badge bg-success">Active</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Hamilton</td>
-                                        <td>mauris@diam.org</td>
-                                        <td>0800 256 8788</td>
-                                        <td>Sanzeno</td>
-                                        <td>
-                                            <span class="badge bg-success">Active</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Harding</td>
-                                        <td>Lorem.ipsum.dolor@etnetuset.com</td>
-                                        <td>0800 1111</td>
-                                        <td>Obaix</td>
-                                        <td>
-                                            <span class="badge bg-success">Active</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Emmanuel</td>
-                                        <td>eget.lacus.Mauris@feugiatSednec.org</td>
-                                        <td>(016977) 8208</td>
-                                        <td>Saint-Remy-Geest</td>
-                                        <td>
-                                            <span class="badge bg-success">Active</span>
-                                        </td>
-                                    </tr>
+                                    {% endfor %}
                                 </tbody>
                             </table>
                         </div>
                     </div>
-
                 </section>
+                
             </div>
 
             <footer>

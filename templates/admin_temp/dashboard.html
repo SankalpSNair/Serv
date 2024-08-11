@@ -84,7 +84,7 @@
                         </li>
 <!-- Manage Customers  -->
                         <li class="sidebar-item ">
-                            <a href="#" class='sidebar-link'>
+                            <a href="{%url 'manage_customers'%}" class='sidebar-link'>
                                 <i class="bi bi-stack"></i>
                                 <span>Manage Customers</span>
                             </a>
@@ -142,7 +142,7 @@
                                             </div>
                                             <div class="col-md-8">
                                                 <h6 class="text-muted font-semibold">Total Users</h6>
-                                                <h6 class="font-extrabold mb-0">263</h6>
+                                                <h6 class="font-extrabold mb-0">{{ total_users }}</h6>
                                             </div>
                                         </div>
                                     </div>
@@ -159,7 +159,7 @@
                                             </div>
                                             <div class="col-md-8">
                                                 <h6 class="text-muted font-semibold">Customers</h6>
-                                                <h6 class="font-extrabold mb-0">183</h6>
+                                                <h6 class="font-extrabold mb-0">{{ total_customers }}</h6>
                                             </div>
                                         </div>
                                     </div>
@@ -176,7 +176,7 @@
                                             </div>
                                             <div class="col-md-8">
                                                 <h6 class="text-muted font-semibold">Workers</h6>
-                                                <h6 class="font-extrabold mb-0">80</h6>
+                                                <h6 class="font-extrabold mb-0">{{ total_workers }}</h6>
                                             </div>
                                         </div>
                                     </div>
@@ -193,7 +193,7 @@
                                             </div>
                                             <div class="col-md-8">
                                                 <h6 class="text-muted font-semibold">Total Bookings</h6>
-                                                <h6 class="font-extrabold mb-0">112</h6>
+                                                <h6 class="font-extrabold mb-0">{{ total_bookings }}</h6>
                                             </div>
                                         </div>
                                     </div>

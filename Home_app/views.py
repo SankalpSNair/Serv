@@ -185,6 +185,7 @@ def edit_plumber(request, plumber_id):
         user.firstname = firstname
         user.lastname = lastname
         user.phone = phone
+        user.availability=availability
         user.save()
 
         return redirect('manage_plumbers')  # Redirect to the manage_plumbers view
@@ -230,6 +231,127 @@ def change_status(request, user_id):
     customer.save()
     return redirect('manage_customers')
 
+def change_booking_status(request, booking_id):
+    # Get the booking instance by id
+    booking = get_object_or_404(Booking, id=booking_id)
+    
+    # Define the status order you want to cycle through
+    status_order = ['Pending', 'Confirmed', 'Completed', 'Cancelled']
+    
+    # Find the current status index and determine the next status
+    current_index = status_order.index(booking.status)
+    next_index = (current_index + 1) % len(status_order)
+    
+    # Update the booking status
+    booking.status = status_order[next_index]
+    booking.save()
+    
+    # Redirect back to the page displaying the bookings
+    return redirect('new_bookings')  # Change 'new_bookings' to the correct view name
+
+
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import Plumber, Users, Skill
+from django.core.files.storage import default_storage
+
+def add_plumber(request):
+    if request.method == 'POST':
+        print("Received POST request")
+
+        firstname = request.POST.get('firstname')
+        lastname = request.POST.get('lastname')
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
+        experience = request.POST.get('experience')
+        availability = request.POST.get('availability')
+        place = request.POST.get('place')
+        district = request.POST.get('district')
+        address = request.POST.get('address')
+        profilepic = request.FILES.get('profilepic')
+        skill_id = request.POST.get('skill_id')
+
+        print(f"Form data received: firstname={firstname}, lastname={lastname}, email={email}, phone={phone}, experience={experience}, availability={availability}, place={place}, district={district}, address={address}, skill_id={skill_id}, profilepic={profilepic}")
+
+        # Basic validation
+        if not (firstname and lastname and email and phone and experience and availability and skill_id):
+            print("Validation failed: Missing required fields")
+            messages.error(request, 'Please fill in all required fields.')
+            return render(request, 'admin_temp/add_plumber.html', {'skills': Skill.objects.all()})
+
+        if len(phone) != 10 or not phone.isdigit():
+            print("Validation failed: Invalid phone number")
+            messages.error(request, 'Phone number must be exactly 10 digits.')
+            return render(request, 'admin_temp/add_plumber.html', {'skills': Skill.objects.all()})
+
+        if not (1 <= int(experience) <= 35):
+            print("Validation failed: Experience out of range")
+            messages.error(request, 'Experience must be between 1 and 35 years.')
+            return render(request, 'admin_temp/add_plumber.html', {'skills': Skill.objects.all()})
+
+        # Create a new user
+        try:
+            print("Creating new user")
+            user = Users.objects.create(
+                firstname=firstname,
+                lastname=lastname,
+                email=email,
+                phone=phone,
+                district=district,
+                place=place,
+                address=address,
+                password='defaultpassword',  # Use a default password or handle this securely
+                usertype='plumber'  # Set appropriate usertype
+            )
+            print(f"User created with user_id={user.user_id}")
+        except Exception as e:
+            print(f"Error creating user: {e}")
+            messages.error(request, 'An error occurred while creating the user.')
+            return render(request, 'admin_temp/add_plumber.html', {'skills': Skill.objects.all()})
+
+        try:
+            skill = Skill.objects.get(skill_id=skill_id)
+            print(f"Skill fetched: {skill}")
+        except Skill.DoesNotExist:
+            print("Validation failed: Skill does not exist")
+            messages.error(request, 'Invalid skill selected.')
+            return render(request, 'admin_temp/add_plumber.html', {'skills': Skill.objects.all()})
+
+        # Save the new plumber with the created user's user_id as a foreign key
+        try:
+            print("Creating new plumber entry")
+            Plumber.objects.create(
+                user_id=user,
+                skill_id=skill,
+                experience=experience,
+                availability=availability,
+                firstname=firstname,
+                lastname=lastname,
+                email=email,
+                phone=phone,
+                place=place,
+                district=district,
+                address=address,
+                profilepic=profilepic
+            )
+            print("Plumber created successfully")
+        except Exception as e:
+            print(f"Error creating plumber: {e}")
+            messages.error(request, 'An error occurred while creating the plumber.')
+            return render(request, 'admin_temp/add_plumber.html', {'skills': Skill.objects.all()})
+
+        messages.success(request, 'Plumber added successfully!')
+        return redirect('manage_plumbers')  # Redirect to a relevant page
+
+    else:
+        print("Received GET request")
+        skills = Skill.objects.all()
+        print(f"Skills fetched: {skills}")
+        return render(request, 'admin_temp/add_plumber.html', {'skills': skills})
+
+
+
 def Full_usersPage(request):
     users = Users.objects.all() 
     return render(request, 'admin_temp/full_users.html', {'users': users})
@@ -241,6 +363,18 @@ def Full_customersPage(request):
 def Full_workersPage(request):
     workers = Users.objects.exclude(usertype='customer') 
     return render(request, 'admin_temp/full_workers.html', {'workers': workers})
+
+def new_bookings(request):
+    # Retrieve all bookings
+    bookings = Booking.objects.all()
+    
+    # Pass the bookings to the template
+    context = {
+        'bookings': bookings
+    }
+    
+    return render(request, 'admin_temp/new_bookings.html', context)
+
 
 # -------------------------  CUSTOMER SIDE ----------------------------- #
 
@@ -401,7 +535,6 @@ def custom_password_reset(request):
         form = CustomPasswordResetForm()
     return render(request, 'registration/password_reset_form.html', {'form': form})
 
-
 def custom_password_reset_confirm(request, uidb64, token):
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
@@ -423,20 +556,8 @@ def custom_password_reset_confirm(request, uidb64, token):
         messages.error(request, 'The reset link is invalid or has expired.')
         return redirect('custom_password_reset')
 
-
 def custom_password_reset_done(request):
     return render(request, 'registration/password_reset_done.html')
-
-
-
-# password reset code ends here
-
-
-
-# def view_maids(request):
-#     # You can pass any necessary context to the template here
-#     return render(request, 'view_maids.html')
-
 
 def view_maids(request):
     user_id = request.session.get('user_id')
@@ -448,7 +569,6 @@ def view_maids(request):
     else:
         messages.warning(request, 'You need to log in first.')
         return redirect('login')
-
 
 def view_plumbers(request):
     user_id = request.session.get('user_id')
@@ -494,10 +614,6 @@ def view_carpenters(request):
         messages.warning(request, 'You need to log in first.')
         return redirect('login')
 
-
-
-
-
 def view_bookings(request):
     user_id = request.session.get('user_id')
 
@@ -512,10 +628,6 @@ def view_bookings(request):
         'bookings': bookings
     }
     return render(request, 'view_booking.html', context)
-
-
-
-
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages

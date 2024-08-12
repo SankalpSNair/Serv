@@ -33,6 +33,10 @@ path('admin/', admin.site.urls),
     path('edit_plumber/<int:plumber_id>/', views.edit_plumber, name='edit_plumber'),
     path('manage_electricians/', views.manage_electrician, name='manage_electricians'),
     path('edit_electrician/<int:electrician_id>/', views.edit_electrician, name='edit_electrician'),
+    path('new-bookings/', views.new_bookings, name='new_bookings'),
+    path('change-booking-status/<int:booking_id>/', views.change_booking_status, name='change_booking_status'),
+    path('add_plumber/', views.add_plumber, name='add_plumber'),
+
     
 
 # admin side end

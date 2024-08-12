@@ -36,6 +36,10 @@ path('admin/', admin.site.urls),
     path('new-bookings/', views.new_bookings, name='new_bookings'),
     path('change-booking-status/<int:booking_id>/', views.change_booking_status, name='change_booking_status'),
     path('add_plumber/', views.add_plumber, name='add_plumber'),
+    path('add_carpenter/', views.add_carpenter, name='add_carpenter'),
+    path('add_electrician/', views.add_electrician, name='add_electrician'),
+    path('add_home_nurse/', views.add_home_nurse, name='add_home_nurse'),
+    path('add_house_maid/', views.add_house_maid, name='add_house_maid'),
 
     
 

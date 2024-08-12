@@ -25,7 +25,7 @@ class Skill(models.Model):
 class House_Maid(models.Model):
     maid_id = models.AutoField(primary_key=True)
     user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
-    skill = models.ForeignKey(Skill, on_delete=models.CASCADE)
+    skill_id = models.ForeignKey(Skill, on_delete=models.CASCADE)
     experience = models.IntegerField()
     availability = models.IntegerField(default=0)
     firstname = models.CharField(max_length=20, blank=False)

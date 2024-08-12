@@ -350,7 +350,389 @@ def add_plumber(request):
         print(f"Skills fetched: {skills}")
         return render(request, 'admin_temp/add_plumber.html', {'skills': skills})
 
+def add_electrician(request):
+    if request.method == 'POST':
+        print("Received POST request")
 
+        firstname = request.POST.get('firstname')
+        lastname = request.POST.get('lastname')
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
+        experience = request.POST.get('experience')
+        availability = request.POST.get('availability')
+        place = request.POST.get('place')
+        district = request.POST.get('district')
+        address = request.POST.get('address')
+        profilepic = request.FILES.get('profilepic')
+        skill_id = request.POST.get('skill_id')
+
+        print(f"Form data received: firstname={firstname}, lastname={lastname}, email={email}, phone={phone}, experience={experience}, availability={availability}, place={place}, district={district}, address={address}, skill_id={skill_id}, profilepic={profilepic}")
+
+        # Basic validation
+        if not (firstname and lastname and email and phone and experience and availability and skill_id):
+            print("Validation failed: Missing required fields")
+            messages.error(request, 'Please fill in all required fields.')
+            return render(request, 'admin_temp/add_electrician.html', {'skills': Skill.objects.all()})
+
+        if len(phone) != 10 or not phone.isdigit():
+            print("Validation failed: Invalid phone number")
+            messages.error(request, 'Phone number must be exactly 10 digits.')
+            return render(request, 'admin_temp/add_electrician.html', {'skills': Skill.objects.all()})
+
+        if not (1 <= int(experience) <= 35):
+            print("Validation failed: Experience out of range")
+            messages.error(request, 'Experience must be between 1 and 35 years.')
+            return render(request, 'admin_temp/add_electrician.html', {'skills': Skill.objects.all()})
+
+        # Create a new user
+        try:
+            print("Creating new user")
+            user = Users.objects.create(
+                firstname=firstname,
+                lastname=lastname,
+                email=email,
+                phone=phone,
+                district=district,
+                place=place,
+                address=address,
+                password='defaultpassword',  # Use a default password or handle this securely
+                usertype='electrician'  # Set appropriate usertype
+            )
+            print(f"User created with user_id={user.user_id}")
+        except Exception as e:
+            print(f"Error creating user: {e}")
+            messages.error(request, 'An error occurred while creating the user.')
+            return render(request, 'admin_temp/add_electrician.html', {'skills': Skill.objects.all()})
+
+        try:
+            skill = Skill.objects.get(skill_id=skill_id)
+            print(f"Skill fetched: {skill}")
+        except Skill.DoesNotExist:
+            print("Validation failed: Skill does not exist")
+            messages.error(request, 'Invalid skill selected.')
+            return render(request, 'admin_temp/add_electrician.html', {'skills': Skill.objects.all()})
+
+        # Save the new electrician with the created user's user_id as a foreign key
+        try:
+            print("Creating new electrician entry")
+            Electrician.objects.create(
+                user_id=user,
+                skill_id=skill,
+                experience=experience,
+                availability=availability,
+                firstname=firstname,
+                lastname=lastname,
+                email=email,
+                phone=phone,
+                place=place,
+                district=district,
+                address=address,
+                profilepic=profilepic
+            )
+            print("Electrician created successfully")
+        except Exception as e:
+            print(f"Error creating electrician: {e}")
+            messages.error(request, 'An error occurred while creating the electrician.')
+            return render(request, 'admin_temp/add_electrician.html', {'skills': Skill.objects.all()})
+
+        messages.success(request, 'Electrician added successfully!')
+        return redirect('manage_electricians')  # Redirect to a relevant page
+
+    else:
+        print("Received GET request")
+        skills = Skill.objects.all()
+        print(f"Skills fetched: {skills}")
+        return render(request, 'admin_temp/add_electrician.html', {'skills': skills})
+
+def add_house_maid(request):
+    if request.method == 'POST':
+        print("Received POST request")
+
+        firstname = request.POST.get('firstname')
+        lastname = request.POST.get('lastname')
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
+        experience = request.POST.get('experience')
+        availability = request.POST.get('availability')
+        place = request.POST.get('place')
+        district = request.POST.get('district')
+        address = request.POST.get('address')
+        profilepic = request.FILES.get('profilepic')
+        skill_id = request.POST.get('skill_id')
+
+        print(f"Form data received: firstname={firstname}, lastname={lastname}, email={email}, phone={phone}, experience={experience}, availability={availability}, place={place}, district={district}, address={address}, skill_id={skill_id}, profilepic={profilepic}")
+
+        # Basic validation
+        if not (firstname and lastname and email and phone and experience and availability and skill_id):
+            print("Validation failed: Missing required fields")
+            messages.error(request, 'Please fill in all required fields.')
+            return render(request, 'admin_temp/add_house_maid.html', {'skills': Skill.objects.all()})
+
+        if len(phone) != 10 or not phone.isdigit():
+            print("Validation failed: Invalid phone number")
+            messages.error(request, 'Phone number must be exactly 10 digits.')
+            return render(request, 'admin_temp/add_house_maid.html', {'skills': Skill.objects.all()})
+
+        if not (1 <= int(experience) <= 35):
+            print("Validation failed: Experience out of range")
+            messages.error(request, 'Experience must be between 1 and 35 years.')
+            return render(request, 'admin_temp/add_house_maid.html', {'skills': Skill.objects.all()})
+
+        # Create a new user
+        try:
+            print("Creating new user")
+            user = Users.objects.create(
+                firstname=firstname,
+                lastname=lastname,
+                email=email,
+                phone=phone,
+                district=district,
+                place=place,
+                address=address,
+                password='defaultpassword',  # Use a default password or handle this securely
+                usertype='house_maid'  # Set appropriate usertype
+            )
+            print(f"User created with user_id={user.user_id}")
+        except Exception as e:
+            print(f"Error creating user: {e}")
+            messages.error(request, 'An error occurred while creating the user.')
+            return render(request, 'admin_temp/add_house_maid.html', {'skills': Skill.objects.all()})
+
+        # Fetch the skill object using the skill_id
+        try:
+            skill_id = int(skill_id)  # Ensure skill_id is an integer
+            print(f"Skill ID to be fetched: {skill_id}")
+            skill = Skill.objects.get(skill_id=skill_id)
+            print(f"Skill fetched: {skill}")
+        except Skill.DoesNotExist:
+            print("Validation failed: Skill does not exist")
+            messages.error(request, 'Invalid skill selected.')
+            return render(request, 'admin_temp/add_house_maid.html', {'skills': Skill.objects.all()})
+        except ValueError:
+            print("Validation failed: Invalid skill_id format")
+            messages.error(request, 'Invalid skill ID format.')
+            return render(request, 'admin_temp/add_house_maid.html', {'skills': Skill.objects.all()})
+
+        # Save the new house maid with the created user's user_id as a foreign key
+        try:
+            print("Creating new house maid entry")
+            House_Maid.objects.create(
+                user_id=user,
+                skill_id=skill,  # Pass the Skill object
+                experience=experience,
+                availability=availability,
+                firstname=firstname,
+                lastname=lastname,
+                email=email,
+                phone=phone,
+                place=place,
+                district=district,
+                address=address,
+                profilepic=profilepic
+            )
+            print("House Maid created successfully")
+        except Exception as e:
+            print(f"Error creating house maid: {e}")
+            messages.error(request, 'An error occurred while creating the house maid.')
+            return render(request, 'admin_temp/add_house_maid.html', {'skills': Skill.objects.all()})
+
+        messages.success(request, 'House Maid added successfully!')
+        return redirect('manage_house_maids')  # Redirect to a relevant page
+
+    else:
+        print("Received GET request")
+        skills = Skill.objects.all()
+        print(f"Skills fetched: {skills}")
+        return render(request, 'admin_temp/add_house_maid.html', {'skills': skills})
+
+
+def add_home_nurse(request):
+    if request.method == 'POST':
+        print("Received POST request")
+
+        firstname = request.POST.get('firstname')
+        lastname = request.POST.get('lastname')
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
+        experience = request.POST.get('experience')
+        availability = request.POST.get('availability')
+        place = request.POST.get('place')
+        district = request.POST.get('district')
+        address = request.POST.get('address')
+        profilepic = request.FILES.get('profilepic')
+        skill_id = request.POST.get('skill_id')
+
+        print(f"Form data received: firstname={firstname}, lastname={lastname}, email={email}, phone={phone}, experience={experience}, availability={availability}, place={place}, district={district}, address={address}, skill_id={skill_id}, profilepic={profilepic}")
+
+        # Basic validation
+        if not (firstname and lastname and email and phone and experience and availability and skill_id):
+            print("Validation failed: Missing required fields")
+            messages.error(request, 'Please fill in all required fields.')
+            return render(request, 'admin_temp/add_home_nurse.html', {'skills': Skill.objects.all()})
+
+        if len(phone) != 10 or not phone.isdigit():
+            print("Validation failed: Invalid phone number")
+            messages.error(request, 'Phone number must be exactly 10 digits.')
+            return render(request, 'admin_temp/add_home_nurse.html', {'skills': Skill.objects.all()})
+
+        if not (1 <= int(experience) <= 35):
+            print("Validation failed: Experience out of range")
+            messages.error(request, 'Experience must be between 1 and 35 years.')
+            return render(request, 'admin_temp/add_home_nurse.html', {'skills': Skill.objects.all()})
+
+        # Create a new user
+        try:
+            print("Creating new user")
+            user = Users.objects.create(
+                firstname=firstname,
+                lastname=lastname,
+                email=email,
+                phone=phone,
+                district=district,
+                place=place,
+                address=address,
+                password='defaultpassword',  # Use a default password or handle this securely
+                usertype='home_nurse'  # Set appropriate usertype
+            )
+            print(f"User created with user_id={user.user_id}")
+        except Exception as e:
+            print(f"Error creating user: {e}")
+            messages.error(request, 'An error occurred while creating the user.')
+            return render(request, 'admin_temp/add_home_nurse.html', {'skills': Skill.objects.all()})
+
+        try:
+            skill = Skill.objects.get(skill_id=skill_id)
+            print(f"Skill fetched: {skill}")
+        except Skill.DoesNotExist:
+            print("Validation failed: Skill does not exist")
+            messages.error(request, 'Invalid skill selected.')
+            return render(request, 'admin_temp/add_home_nurse.html', {'skills': Skill.objects.all()})
+
+        # Save the new home nurse with the created user's user_id as a foreign key
+        try:
+            print("Creating new home nurse entry")
+            Home_Nurse.objects.create(
+                user_id=user,
+                skill_id=skill,
+                experience=experience,
+                availability=availability,
+                firstname=firstname,
+                lastname=lastname,
+                email=email,
+                phone=phone,
+                place=place,
+                district=district,
+                address=address,
+                profilepic=profilepic
+            )
+            print("Home nurse created successfully")
+        except Exception as e:
+            print(f"Error creating home nurse: {e}")
+            messages.error(request, 'An error occurred while creating the home nurse.')
+            return render(request, 'admin_temp/add_home_nurse.html', {'skills': Skill.objects.all()})
+
+        messages.success(request, 'Home nurse added successfully!')
+        return redirect('manage_home_nurses')  # Redirect to a relevant page
+
+    else:
+        print("Received GET request")
+        skills = Skill.objects.all()
+        print(f"Skills fetched: {skills}")
+        return render(request, 'admin_temp/add_home_nurse.html', {'skills': skills})
+
+def add_carpenter(request):
+    if request.method == 'POST':
+        print("Received POST request")
+
+        firstname = request.POST.get('firstname')
+        lastname = request.POST.get('lastname')
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
+        experience = request.POST.get('experience')
+        availability = request.POST.get('availability')
+        place = request.POST.get('place')
+        district = request.POST.get('district')
+        address = request.POST.get('address')
+        profilepic = request.FILES.get('profilepic')
+        skill_id = request.POST.get('skill_id')
+
+        print(f"Form data received: firstname={firstname}, lastname={lastname}, email={email}, phone={phone}, experience={experience}, availability={availability}, place={place}, district={district}, address={address}, skill_id={skill_id}, profilepic={profilepic}")
+
+        # Basic validation
+        if not (firstname and lastname and email and phone and experience and availability and skill_id):
+            print("Validation failed: Missing required fields")
+            messages.error(request, 'Please fill in all required fields.')
+            return render(request, 'admin_temp/add_carpenter.html', {'skills': Skill.objects.all()})
+
+        if len(phone) != 10 or not phone.isdigit():
+            print("Validation failed: Invalid phone number")
+            messages.error(request, 'Phone number must be exactly 10 digits.')
+            return render(request, 'admin_temp/add_carpenter.html', {'skills': Skill.objects.all()})
+
+        if not (1 <= int(experience) <= 35):
+            print("Validation failed: Experience out of range")
+            messages.error(request, 'Experience must be between 1 and 35 years.')
+            return render(request, 'admin_temp/add_carpenter.html', {'skills': Skill.objects.all()})
+
+        # Create a new user
+        try:
+            print("Creating new user")
+            user = Users.objects.create(
+                firstname=firstname,
+                lastname=lastname,
+                email=email,
+                phone=phone,
+                district=district,
+                place=place,
+                address=address,
+                password='defaultpassword',  # Use a default password or handle this securely
+                usertype='carpenter'  # Set appropriate usertype
+            )
+            print(f"User created with user_id={user.user_id}")
+        except Exception as e:
+            print(f"Error creating user: {e}")
+            messages.error(request, 'An error occurred while creating the user.')
+            return render(request, 'admin_temp/add_carpenter.html', {'skills': Skill.objects.all()})
+
+        try:
+            skill = Skill.objects.get(skill_id=skill_id)
+            print(f"Skill fetched: {skill}")
+        except Skill.DoesNotExist:
+            print("Validation failed: Skill does not exist")
+            messages.error(request, 'Invalid skill selected.')
+            return render(request, 'admin_temp/add_carpenter.html', {'skills': Skill.objects.all()})
+
+        # Save the new carpenter with the created user's user_id as a foreign key
+        try:
+            print("Creating new carpenter entry")
+            Carpenter.objects.create(
+                user_id=user,
+                skill_id=skill,
+                experience=experience,
+                availability=availability,
+                firstname=firstname,
+                lastname=lastname,
+                email=email,
+                phone=phone,
+                place=place,
+                district=district,
+                address=address,
+                profilepic=profilepic
+            )
+            print("Carpenter created successfully")
+        except Exception as e:
+            print(f"Error creating carpenter: {e}")
+            messages.error(request, 'An error occurred while creating the carpenter.')
+            return render(request, 'admin_temp/add_carpenter.html', {'skills': Skill.objects.all()})
+
+        messages.success(request, 'Carpenter added successfully!')
+        return redirect('manage_carpenters')  # Redirect to a relevant page
+
+    else:
+        print("Received GET request")
+        skills = Skill.objects.all()
+        print(f"Skills fetched: {skills}")
+        return render(request, 'admin_temp/add_carpenter.html', {'skills': skills})
 
 def Full_usersPage(request):
     users = Users.objects.all() 

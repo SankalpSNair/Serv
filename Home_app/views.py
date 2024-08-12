@@ -827,19 +827,44 @@ def LoginPage(request):
         email = request.POST.get('username')
         password = request.POST.get('password')
 
+        print(f"Login attempt: Email={email}")
+
+        # Check if the email belongs to the admin
         try:
-            user = Users.objects.get(email=email)
-            if check_password(password, user.password):
-                request.session['user_id'] = user.user_id
-                request.session['user_email'] = user.email
-                messages.success(request, 'Login successful')
-                print(f"User ID set in session: {request.session.get('user_id')}")
-                return redirect('home')
+            admin = User.objects.get(username=email)
+            print(f"Admin found:")
+
+            if check_password(password, admin.password):
+                # Admin credentials
+                
+                request.session['user_email'] = admin.email
+                messages.success(request, 'Admin login successful')
+                print(f"Admin login successful:")
+                return redirect('dashboard')  # Redirect to the admin dashboard or a specific page
             else:
                 messages.error(request, 'Invalid Credentials')
-        except Users.DoesNotExist:
-            messages.error(request, 'Invalid Credentials')
-        
+                print("Admin login failed: Incorrect password")
+        except User.DoesNotExist:
+            print("Admin login failed: User does not exist")
+            # If admin check fails, check regular users
+            try:
+                user = Users.objects.get(email=email)
+                print(f"User found: User ID={user.user_id}")
+
+                if check_password(password, user.password):
+                    # Regular user credentials
+                    request.session['user_id'] = user.user_id
+                    request.session['user_email'] = user.email
+                    messages.success(request, 'Login successful')
+                    print(f"User login successful: User ID={request.session.get('user_id')}")
+                    return redirect('home')
+                else:
+                    messages.error(request, 'Invalid Credentials')
+                    print("User login failed: Incorrect password")
+            except Users.DoesNotExist:
+                messages.error(request, 'Invalid Credentials')
+                print("User login failed: User does not exist")
+
     return render(request, 'login.html')
 
 
@@ -853,39 +878,58 @@ def LogoutPage(request):
 
 # register, login and logout ends here
 
+
 @never_cache
 def customer_profile(request):
-    user_id = request.session.get('user_id')  # Assuming user_id is stored in session
+    user_id = request.session.get('user_id')  # Get user_id from session
 
     if request.method == 'POST':
+        if user_id:
+            try:
+                user = Users.objects.get(user_id=user_id)
+                
+                # Update user information from the form data
+                user.firstname = request.POST.get('first_name')
+                user.lastname = request.POST.get('last_name')
+                user.email = request.POST.get('email')
+                user.phone = request.POST.get('phone')
+                user.address = request.POST.get('address')
+                
+                # Handle profile picture update
+                if 'profile_pic' in request.FILES:
+                    user.image = request.FILES['profile_pic']
+                
+                user.save()
+                messages.success(request, 'Profile updated successfully.')
+                return redirect('home')  # Redirect to the home page after updating
+
+            except Users.DoesNotExist:
+                messages.error(request, 'User not found.')
+                return redirect('login')
+        else:
+            messages.warning(request, 'You need to log in first.')
+            return redirect('login')
+
+    # Handle GET request
+    if user_id:
         try:
             user = Users.objects.get(user_id=user_id)
-            user.firstname = request.POST.get('first_name')
-            user.lastname = request.POST.get('last_name')
-            user.phone = request.POST.get('phone')
-            user.address = request.POST.get('address')
-
-            # Handle profile picture update
-            if request.FILES.get('profile_pic'):
-                user.image = request.FILES['profile_pic']
-            
-            user.save()
-            messages.success(request, 'Profile updated successfully.')
-            return redirect('customer_profile')  # Redirect to the profile page after updating
+            context = {
+                'first_name': user.firstname,
+                'last_name': user.lastname,
+                'email': user.email,
+                'phone': user.phone,
+                'address': user.address,
+                'profile_picture_url': user.image.url if user.image else '/media/default_profile_pic.png',
+            }
+            return render(request, 'view_profile.html', context)
         except Users.DoesNotExist:
             messages.error(request, 'User not found.')
             return redirect('login')
     else:
-        user = get_object_or_404(Users, user_id=user_id)
-        context = {
-            'first_name': user.firstname,
-            'last_name': user.lastname,
-            'email': user.email,
-            'phone': user.phone,
-            'address': user.address,
-            'profile_picture_url': user.image.url if user.image else None,
-        }
-        return render(request, 'view_profile.html', context)
+        messages.warning(request, 'You need to log in first.')
+        return redirect('login')
+
    
 
 def update_profile(request):
@@ -1082,7 +1126,6 @@ def view_services(request):
         messages.warning(request, 'You need to log in first.')
         return redirect('login')
 
-
 def book_service(request, maid_id):
     user_id = request.session.get('user_id')
     
@@ -1127,3 +1170,185 @@ def book_service(request, maid_id):
         'maid': maid
     }
     return render(request, 'registration/book_service.html', context)
+
+
+
+def book_home_nurse(request, nurse_id):
+    user_id = request.session.get('user_id')
+    
+    # Fetch the home nurse or return a 404 error if not found
+    nurse = get_object_or_404(Home_Nurse, nurse_id=nurse_id)
+    
+    # Check if the user is logged in
+    if not user_id:
+        messages.warning(request, 'You need to log in first.')
+        return redirect('login')
+    
+    if request.method == 'POST':
+        appointment_date = request.POST.get('appointment_date')
+        appointment_time = request.POST.get('appointment_time')
+        address = request.POST.get('address')
+        
+        # Fetch the customer (logged-in user) or return an error if not found
+        try:
+            customer = Users.objects.get(user_id=user_id)
+            
+            # Create and save the booking
+            booking = Booking(
+                worker_id=nurse.user_id,  # Use nurse's user_id as the worker
+                worker_type='Home Nurse',  # Correct worker type
+                customer_id=customer,
+                appointment_date=appointment_date,
+                appointment_time=appointment_time,
+                address=address,
+                status='Pending'  # Default status
+            )
+            booking.save()
+            
+            messages.success(request, 'Booking successfully created!')
+            return redirect('view_bookings')
+        
+        except Users.DoesNotExist:
+            messages.error(request, 'User not found.')
+            return redirect('view_nurses')
+    
+    # Provide the nurse object to the template for displaying details
+    context = {
+        'nurse': nurse
+    }
+    return render(request, 'registration/book_nurse.html', context)
+
+def book_carpenter(request, carpenter_id):
+    user_id = request.session.get('user_id')
+    
+    # Fetch the carpenter or return a 404 error if not found
+    carpenter = get_object_or_404(Carpenter, carpenter_id=carpenter_id)
+    
+    # Check if the user is logged in
+    if not user_id:
+        messages.warning(request, 'You need to log in first.')
+        return redirect('login')
+    
+    if request.method == 'POST':
+        appointment_date = request.POST.get('appointment_date')
+        appointment_time = request.POST.get('appointment_time')
+        address = request.POST.get('address')
+        
+        # Fetch the customer (logged-in user) or return an error if not found
+        try:
+            customer = Users.objects.get(user_id=user_id)
+            
+            # Create and save the booking
+            booking = Booking(
+                worker_id=carpenter.user_id,  # Use carpenter's user_id as the worker
+                worker_type='Carpenter',  # Correct worker type
+                customer_id=customer,
+                appointment_date=appointment_date,
+                appointment_time=appointment_time,
+                address=address,
+                status='Pending'  # Default status
+            )
+            booking.save()
+            
+            messages.success(request, 'Booking successfully created!')
+            return redirect('view_bookings')
+        
+        except Users.DoesNotExist:
+            messages.error(request, 'User not found.')
+            return redirect('view_carpenters')
+    
+    # Provide the carpenter object to the template for displaying details
+    context = {
+        'carpenter': carpenter
+    }
+    return render(request, 'registration/book_carpenter.html', context)
+
+def book_plumber(request, plumber_id):
+    user_id = request.session.get('user_id')
+    
+    # Fetch the plumber or return a 404 error if not found
+    plumber = get_object_or_404(Plumber, plumber_id=plumber_id)
+    
+    # Check if the user is logged in
+    if not user_id:
+        messages.warning(request, 'You need to log in first.')
+        return redirect('login')
+    
+    if request.method == 'POST':
+        appointment_date = request.POST.get('appointment_date')
+        appointment_time = request.POST.get('appointment_time')
+        address = request.POST.get('address')
+        
+        # Fetch the customer (logged-in user) or return an error if not found
+        try:
+            customer = Users.objects.get(user_id=user_id)
+            
+            # Create and save the booking
+            booking = Booking(
+                worker_id=plumber.user_id,  # Use plumber's user_id as the worker
+                worker_type='Plumber',  # Correct worker type
+                customer_id=customer,
+                appointment_date=appointment_date,
+                appointment_time=appointment_time,
+                address=address,
+                status='Pending'  # Default status
+            )
+            booking.save()
+            
+            messages.success(request, 'Booking successfully created!')
+            return redirect('view_bookings')
+        
+        except Users.DoesNotExist:
+            messages.error(request, 'User not found.')
+            return redirect('view_plumbers')
+    
+    # Provide the plumber object to the template for displaying details
+    context = {
+        'plumber': plumber
+    }
+    return render(request, 'registration/book_plumber.html', context)
+
+def book_electrician(request, electrician_id):
+    user_id = request.session.get('user_id')
+    
+    # Fetch the electrician or return a 404 error if not found
+    electrician = get_object_or_404(Electrician, electrician_id=electrician_id)
+    
+    # Check if the user is logged in
+    if not user_id:
+        messages.warning(request, 'You need to log in first.')
+        return redirect('login')
+    
+    if request.method == 'POST':
+        appointment_date = request.POST.get('appointment_date')
+        appointment_time = request.POST.get('appointment_time')
+        address = request.POST.get('address')
+        
+        # Fetch the customer (logged-in user) or return an error if not found
+        try:
+            customer = Users.objects.get(user_id=user_id)
+            
+            # Create and save the booking
+            booking = Booking(
+                worker_id=electrician.user_id,  # Use electrician's user_id as the worker
+                worker_type='Electrician',  # Correct worker type
+                customer_id=customer,
+                appointment_date=appointment_date,
+                appointment_time=appointment_time,
+                address=address,
+                status='Pending'  # Default status
+            )
+            booking.save()
+            
+            messages.success(request, 'Booking successfully created!')
+            return redirect('view_bookings')
+        
+        except Users.DoesNotExist:
+            messages.error(request, 'User not found.')
+            return redirect('view_electricians')
+    
+    # Provide the electrician object to the template for displaying details
+    context = {
+        'electrician': electrician
+    }
+    return render(request, 'registration/book_electrician.html', context)

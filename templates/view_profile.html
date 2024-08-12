@@ -175,13 +175,13 @@ input, optgroup, select, textarea {
                         <!-- ***** Menu Start ***** -->
                         <ul class="nav">
 
-                                <li><a href="{% url 'home' %}" class="active" style="font-size: 18px;">Home</a></li>
-                                <li><a href="#features" style="font-size: 18px;">About</a></li>
-                                <li><a href="#work-process" style="font-size: 18px;">Services</a></li>
-                                <li><a href="#blog" style="font-size: 18px;">Blog Entries</a></li>
-                                <li><a href="#contact-us" style="font-size: 18px;">Contact Us</a></li>
-                                <li><a href="{% url 'view_bookings' %}" style="font-size: 18px;">Bookings</a></li>
-                                <li><a href="{% url 'logout' %}" style="font-size: 18px;">Log Out</a></li>
+                            <li><a href="{% url 'home' %}" class="active" style="font-size: 15px;">Home</a></li>
+                            <li><a href="#features" style="font-size: 15px;">About</a></li>
+                            <li><a href="{%url 'services'%}" style="font-size: 15px;">Services</a></li>
+                            <li><a href="#" style="font-size: 15px;">Blog Entries</a></li>
+                            <li><a href="#" style="font-size: 15px;">Contact Us</a></li>
+                            <li><a href="{% url 'view_bookings' %}" style="font-size: 15px;">Bookings</a></li>
+                            <!-- <li><a href="{% url 'logout' %}" style="font-size: 15px;">Log Out</a></li> -->
                                 
                         </ul>
                         <a class='menu-trigger'>
@@ -247,65 +247,65 @@ input, optgroup, select, textarea {
                     
                     <!-- Profile Edit Form -->
                     <!-- Profile Edit Form -->
-<form action="{% url 'update_profile' %}" method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    <!-- Profile Details Table -->
-    <table class="profile-table">
-        <tr>
-            <td class="profile-label">Profile Picture:</td>
-            <td class="profile-value">
-                <div class="profile-pic-container">
-                    <img id="profile-pic" src="{{ profile_picture_url }}" alt="Profile Picture" class="profile-pic"/>
-                    <label for="profile-pic-input" class="custom-file-upload">
-                        <i class="zmdi zmdi-camera"></i> Change Photo
-                    </label>
-                    <input type="file" id="profile-pic-input" name="profile_pic" accept="image/*" style="display: none;" />
-                </div>
-                <span id="profile-pic-error" class="error-message"></span>
-            </td>
-        </tr>
-        <tr>
-            <td class="profile-label">First Name:</td>
-            <td class="profile-value">
-                <input type="text" id="first-name" name="first_name" value="{{ first_name }}" readonly>
-                <span id="first-name-error" class="error-message"></span>
-            </td>
-        </tr>
-        <tr>
-            <td class="profile-label">Last Name:</td>
-            <td class="profile-value">
-                <input type="text" id="last-name" name="last_name" value="{{ last_name }}" readonly>
-                <span id="last-name-error" class="error-message"></span>
-            </td>
-        </tr>
-        <tr>
-            <td class="profile-label">Email:</td>
-            <td class="profile-value">
-                <input type="email" id="email" name="email" value="{{ email }}" disabled>
-                <span id="email-error" class="error-message"></span>
-            </td>
-        </tr>
-        <tr>
-            <td class="profile-label">Phone:</td>
-            <td class="profile-value">
-                <input type="text" id="phone" name="phone" value="{{ phone }}" readonly>
-                <span id="phone-error" class="error-message"></span>
-            </td>
-        </tr>
-        <tr>
-            <td class="profile-label">Address:</td>
-            <td class="profile-value">
-                <textarea id="address" name="address" rows="4" readonly>{{ address }}</textarea>
-                <span id="address-error" class="error-message"></span>
-            </td>
-        </tr>
-    </table>
+                    <form action="{% url 'update_profile' %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <!-- Profile Details Table -->
+                        <table class="profile-table">
+                            <tr>
+                                <td class="profile-label">Profile Picture:</td>
+                                <td class="profile-value">
+                                    <div class="profile-pic-container">
+                                        <img id="profile-pic" src="{{ profile_picture_url }}" alt="Profile Picture" class="profile-pic"/>
+                                        <label for="profile-pic-input" class="custom-file-upload">
+                                            <i class="zmdi zmdi-camera"></i> Change Photo
+                                        </label>
+                                        <input type="file" id="profile-pic-input" name="profile_pic" accept="image/*" style="display: none;" />
+                                    </div>
+                                    <span id="profile-pic-error" class="error-message"></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="profile-label">First Name:</td>
+                                <td class="profile-value">
+                                    <input type="text" id="first-name" name="first_name" value="{{ first_name }}" readonly>
+                                    <span id="first-name-error" class="error-message"></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="profile-label">Last Name:</td>
+                                <td class="profile-value">
+                                    <input type="text" id="last-name" name="last_name" value="{{ last_name }}" readonly>
+                                    <span id="last-name-error" class="error-message"></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="profile-label">Email:</td>
+                                <td class="profile-value">
+                                    <input type="email" id="email" name="email" value="{{ email }}" disabled>
+                                    <span id="email-error" class="error-message"></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="profile-label">Phone:</td>
+                                <td class="profile-value">
+                                    <input type="text" id="phone" name="phone" value="{{ phone }}" readonly>
+                                    <span id="phone-error" class="error-message"></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="profile-label">Address:</td>
+                                <td class="profile-value">
+                                    <textarea id="address" name="address" rows="4" readonly>{{ address }}</textarea>
+                                    <span id="address-error" class="error-message"></span>
+                                </td>
+                            </tr>
+                        </table>
 
-    <div style="text-align: center; margin-top: 20px;">
-        <button type="button" id="edit-profile-btn" class="save-profile-btn">Edit Profile</button>
-        <button type="submit" id="save-profile-btn" class="save-profile-btn" style="display: none;">Save Changes</button>
-    </div>
-</form>
+                        <div style="text-align: center; margin-top: 20px;">
+                            <button type="button" id="edit-profile-btn" class="save-profile-btn">Edit Profile</button>
+                            <button type="submit" id="save-profile-btn" class="save-profile-btn" style="display: none;">Save Changes</button>
+                        </div>
+                    </form>
 
                 </div>
             </div>
@@ -458,8 +458,5 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 </script>
-
-        
-
   </body>
 </html>

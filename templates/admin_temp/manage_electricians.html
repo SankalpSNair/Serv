@@ -36,88 +36,87 @@
 
 <!-- DashboardPage -->
 
-                <div class="sidebar-menu">
-                    <ul class="menu">
-                        <li class="sidebar-title">Menu</li>
+<div class="sidebar-menu">
+    <ul class="menu">
+        <li class="sidebar-title">Menu</li>
 
-                        <li class="sidebar-item active ">
-                            <a href="{% url 'dashboard' %}" class='sidebar-link'>
-                                <i class="bi bi-grid-fill"></i>
-                                <span>Dashboard</span>
-                            </a>
-                        </li>
+        <li class="sidebar-item active ">
+            <a href="{% url 'dashboard' %}" class='sidebar-link'>
+                <i class="bi bi-grid-fill"></i>
+                <span>Dashboard</span>
+            </a>
+        </li>
 <!-- View Users  -->
-                        <li class="sidebar-item  has-sub">
-                            <a href="#" class='sidebar-link'>
-                                <i class="bi bi-stack"></i>
-                                <span>View Users</span>
-                            </a>
-                            <ul class="submenu ">
-                                <li class="submenu-item ">
-                                    <a href="{%url 'full_users'%}">All Users</a>
-                                </li>
-                                <li class="submenu-item ">
-                                    <a href="{%url 'full_customers'%}">Customers</a>
-                                </li>
-                                <li class="submenu-item ">
-                                    <a href="{%url 'full_workers'%}">Workers</a>
-                                </li>
-                            </ul>
-                        </li>
+        <li class="sidebar-item  has-sub">
+            <a href="#" class='sidebar-link'>
+                <i class="bi bi-stack"></i>
+                <span>View Users</span>
+            </a>
+            <ul class="submenu ">
+                <!-- <li class="submenu-item ">
+                    <a href="{%url 'full_users'%}">All Users</a>
+                </li> -->
+                <li class="submenu-item ">
+                    <a href="{%url 'full_customers'%}">Customers</a>
+                </li>
+                <li class="submenu-item ">
+                    <a href="{%url 'full_workers'%}">Workers</a>
+                </li>
+            </ul>
+        </li>
 <!-- Booking  -->
-                        <li class="sidebar-item  has-sub">
-                            <a href="#" class='sidebar-link'>
-                                <i class="bi bi-collection-fill"></i>
-                                <span>View Bookings</span>
-                            </a>
-                            <ul class="submenu ">
-                                <li class="submenu-item ">
-                                    <a href="#">New Requests</a>
-                                </li>
-                                <li class="submenu-item ">
-                                    <a href="#">Allocated Bookings</a>
-                                </li>
-                                <li class="submenu-item ">
-                                    <a href="#">All Bookings</a>
-                                </li>
-                            </ul>
-                        </li>
+        <li class="sidebar-item  has-sub">
+            <a href="#" class='sidebar-link'>
+                <i class="bi bi-collection-fill"></i>
+                <span>View Bookings</span>
+            </a>
+            <ul class="submenu ">
+                <li class="submenu-item ">
+                    <a href="{%url 'new_bookings'%}">New Requests</a>
+                </li>
+                <li class="submenu-item ">
+                    <a href="#">Allocated Bookings</a>
+                </li>
+                <li class="submenu-item ">
+                    <a href="#">All Bookings</a>
+                </li>
+            </ul>
+        </li>
 <!-- Manage Customers  -->
-                        <li class="sidebar-item ">
-                            <a href="{%url 'manage_customers'%}" class='sidebar-link'>
-                                <i class="bi bi-stack"></i>
-                                <span>Manage Customers</span>
-                            </a>
-                        </li>
+        <!-- <li class="sidebar-item ">
+            <a href="{%url 'manage_customers'%}" class='sidebar-link'>
+                <i class="bi bi-stack"></i>
+                <span>Manage Customers</span>
+            </a>
+        </li> -->
 <!-- Manage Workers  -->
-                        <li class="sidebar-item  has-sub">
-                            <a href="#" class='sidebar-link'>
-                                <i class="bi bi-stack"></i>
-                                <span>Manage Workers</span>
-                            </a>
-                            <ul class="submenu ">
-                                <li class="submenu-item ">
-                                    <a href="{% url 'manage_home_nurses' %}">Home Nurse</a>
-                                </li>
-                                <li class="submenu-item ">
-                                    <a href="{% url 'manage_house_maids' %}">House Maid</a>
-                                </li>
-                                <li class="submenu-item ">
-                                    <a href="{% url 'manage_electricians' %}">Electrician</a>
-                                </li>
-                                <li class="submenu-item ">
-                                    <a href="{% url 'manage_plumbers' %}">Plumber</a>
-                                </li>
-                                <li class="submenu-item ">
-                                    <a href="{% url 'manage_carpenters' %}">Carpenter</a>
-                                </li>
-                            </ul>
-                        </li>
-                </div>
-                <button class="sidebar-toggler btn x"><i data-feather="x"></i></button>
-            </div>
-        </div>
-
+        <li class="sidebar-item  has-sub">
+            <a href="#" class='sidebar-link'>
+                <i class="bi bi-stack"></i>
+                <span>Manage Workers</span>
+            </a>
+            <ul class="submenu ">
+                <li class="submenu-item ">
+                    <a href="{% url 'manage_home_nurses' %}">Home Nurse</a>
+                </li>
+                <li class="submenu-item ">
+                    <a href="{% url 'manage_house_maids' %}">House Maid</a>
+                </li>
+                <li class="submenu-item ">
+                    <a href="{% url 'manage_electricians' %}">Electrician</a>
+                </li>
+                <li class="submenu-item ">
+                    <a href="{% url 'manage_plumbers' %}">Plumber</a>
+                </li>
+                <li class="submenu-item ">
+                    <a href="{% url 'manage_carpenters' %}">Carpenter</a>
+                </li>
+            </ul>
+        </li>
+</div>
+<button class="sidebar-toggler btn x"><i data-feather="x"></i></button>
+</div>
+</div>
         <div id="main">
             <header class="mb-3">
                 <a href="#" class="burger-btn d-block d-xl-none">

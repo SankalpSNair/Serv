@@ -3,10 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout as logouts
-
-# from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
-
 from django.contrib import messages
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage
@@ -20,12 +17,13 @@ from django.contrib.auth.forms import SetPasswordForm
 from .models import Users,House_Maid,Skill,Carpenter,Electrician,Plumber,Home_Nurse,Booking
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.hashers import check_password
-# register, login and logout starts here
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import Plumber, Users, Skill
+from django.core.files.storage import default_storage
+from django.contrib import messages
 
 
-
-# @login_required(login_url='login')
-# @login_required(login_url='login')
 
 # -------------------------  ADMIN SIDE ----------------------------- #
 
@@ -248,13 +246,6 @@ def change_booking_status(request, booking_id):
     
     # Redirect back to the page displaying the bookings
     return redirect('new_bookings')  # Change 'new_bookings' to the correct view name
-
-
-
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from .models import Plumber, Users, Skill
-from django.core.files.storage import default_storage
 
 def add_plumber(request):
     if request.method == 'POST':
@@ -803,9 +794,6 @@ def HomePage(request):
         return redirect('login')
 
 
-
-
-
 def SignupPage(request):
     if request.method == 'POST':
         fname = request.POST.get('fname')
@@ -855,7 +843,6 @@ def LoginPage(request):
     return render(request, 'login.html')
 
 
-from django.contrib import messages
 
 def LogoutPage(request):
     logouts(request)
@@ -866,24 +853,86 @@ def LogoutPage(request):
 
 # register, login and logout ends here
 
-def update_profile(request):
-    user_id = request.session.get('user_id')
+@never_cache
+def customer_profile(request):
+    user_id = request.session.get('user_id')  # Assuming user_id is stored in session
+
     if request.method == 'POST':
         try:
             user = Users.objects.get(user_id=user_id)
-            user.firstname = request.POST.get('firstname')
-            user.lastname = request.POST.get('lastname')
+            user.firstname = request.POST.get('first_name')
+            user.lastname = request.POST.get('last_name')
             user.phone = request.POST.get('phone')
             user.address = request.POST.get('address')
+
+            # Handle profile picture update
+            if request.FILES.get('profile_pic'):
+                user.image = request.FILES['profile_pic']
+            
             user.save()
             messages.success(request, 'Profile updated successfully.')
-            return redirect('home')
+            return redirect('customer_profile')  # Redirect to the profile page after updating
         except Users.DoesNotExist:
             messages.error(request, 'User not found.')
             return redirect('login')
     else:
-        messages.error(request, 'Invalid request.')
-        return redirect('home')
+        user = get_object_or_404(Users, user_id=user_id)
+        context = {
+            'first_name': user.firstname,
+            'last_name': user.lastname,
+            'email': user.email,
+            'phone': user.phone,
+            'address': user.address,
+            'profile_picture_url': user.image.url if user.image else None,
+        }
+        return render(request, 'view_profile.html', context)
+   
+
+def update_profile(request):
+    user_id = request.session.get('user_id')
+    
+    if request.method == 'POST':
+        try:
+            # Retrieve the user based on session ID
+            user = Users.objects.get(user_id=user_id)
+            
+            # Update user fields from POST data
+            user.firstname = request.POST.get('first_name', user.firstname)
+            user.lastname = request.POST.get('last_name', user.lastname)
+            user.phone = request.POST.get('phone', user.phone)
+            user.address = request.POST.get('address', user.address)
+
+            # Handle profile picture upload
+            profile_pic = request.FILES.get('profile_pic', None)
+            if profile_pic:
+                user.image = profile_pic
+
+            # Save the updated user information
+            user.save()
+            messages.success(request, 'Profile updated successfully.')
+            return redirect('profile')
+        
+        except Users.DoesNotExist:
+            messages.error(request, 'User not found.')
+            return redirect('login')
+
+    else:
+        # If GET request, render the profile update page with existing user data
+        try:
+            user = Users.objects.get(user_id=user_id)
+            context = {
+                'first_name': user.firstname,
+                'last_name': user.lastname,
+                'email': user.email,
+                'phone': user.phone,
+                'address': user.address,
+                'profile_picture_url': user.image.url if user.image else None
+            }
+            return render(request, 'update_profile.html', context)
+        
+        except Users.DoesNotExist:
+            messages.error(request, 'User not found.')
+            return redirect('login')
 # password reset code starts here 
 
 def custom_password_reset(request):
@@ -1011,9 +1060,28 @@ def view_bookings(request):
     }
     return render(request, 'view_booking.html', context)
 
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
-from .models import Booking, Users
+def view_services(request):
+    user_id = request.session.get('user_id')
+    
+    if user_id:
+        try:
+            user = Users.objects.get(user_id=user_id)
+            context = {
+                'first_name': user.firstname,
+                'last_name': user.lastname,
+                'email': user.email,
+                'phone': user.phone,
+                'address': user.address,
+                'profile_picture_url': user.image.url if user.image else '/media/default_profile_pic.png',
+            }
+            return render(request, 'services.html', context)
+        except Users.DoesNotExist:
+            messages.error(request, 'User not found.')
+            return redirect('login')
+    else:
+        messages.warning(request, 'You need to log in first.')
+        return redirect('login')
+
 
 def book_service(request, maid_id):
     user_id = request.session.get('user_id')

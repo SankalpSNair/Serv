@@ -15,6 +15,7 @@ path('admin/', admin.site.urls),
     path('custom_password_reset_confirm/<uidb64>/<token>/', views.custom_password_reset_confirm, name='custom_password_reset_confirm'),
     path('social-auth/', include('social_django.urls', namespace='social')),
 
+
 # admin side start
 
     path('dashboard/', views.DashboardPage, name='dashboard'),
@@ -52,6 +53,9 @@ path('admin/', admin.site.urls),
     path('view_nurses/', views.view_nurses, name='view_nurses'),
     path('view_bookings/', views.view_bookings, name='view_bookings'),
     path('book_service/<int:maid_id>/', views.book_service, name='book_service'),
+    path('services/', views.view_services, name='services'),
+    path('profile/', views.customer_profile, name='profile'),
 
-
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] 
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

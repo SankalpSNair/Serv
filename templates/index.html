@@ -263,11 +263,11 @@
                         <ul class="nav">
                             <li><a href="{% url 'home' %}" class="active" style="font-size: 15px;">Home</a></li>
                             <li><a href="#features" style="font-size: 15px;">About</a></li>
-                            <li><a href="#work-process" style="font-size: 15px;">Services</a></li>
-                            <li><a href="#blog" style="font-size: 15px;">Blog Entries</a></li>
-                            <li><a href="#contact-us" style="font-size: 15px;">Contact Us</a></li>
+                            <li><a href="{%url 'services'%}" style="font-size: 15px;">Services</a></li>
+                            <li><a href="#" style="font-size: 15px;">Blog Entries</a></li>
+                            <li><a href="#" style="font-size: 15px;">Contact Us</a></li>
                             <li><a href="{% url 'view_bookings' %}" style="font-size: 15px;">Bookings</a></li>
-                            <li><a href="#" id="profile-link" style="font-size: 15px;">Profile</a></li>
+                            <li><a href="{% url 'profile' %}" id="profile-link" style="font-size: 15px;">Profile</a></li>
                             <li><a href="{% url 'logout' %}" style="font-size: 15px;">Log Out</a></li>
                         </ul>
                         <a class='menu-trigger'>
@@ -280,56 +280,6 @@
         </div>
     </header>
     
-    <div id="profile-popup" class="profile-popup">
-        <div class="profile-popup-content">
-            <span class="close">&times;</span>
-            <h2 align="center">PROFILE</h2><br>
-    
-            <form id="profile-form" method="POST" enctype="multipart/form-data">
-                {% csrf_token %}
-    
-                <!-- Profile Picture -->
-                <!-- <div class="profile-pic-container">
-                    <img id="profile-pic" src="{{ profile_picture_url }}" alt="Profile Picture" class="profile-pic"/>
-                    <input type="file" id="profile-pic-input" name="profile_pic" accept="image/*"/>
-                </div> -->
-                <div class="profile-pic-container">
-                    <img id="profile-pic" src="{{ profile_picture_url }}" alt="Profile Picture" class="profile-pic"/>
-                    
-                    <!-- Hidden file input -->
-                    <input type="file" id="profile-pic-input" name="profile_pic" accept="image/*" style="display: none;" />
-                
-                    <!-- Custom upload button -->
-                     <div class="" style="width: 100%; display: flex; justify-content: center;">
-                        <label for="profile-pic-input" class="custom-file-upload">
-                             <i class="zmdi zmdi-camera"></i> Change Photo
-                        </label>
-                    </div>
-                </div>    
-                <!-- Name -->
-                <label for="first_name">First Name:</label>
-                <input type="text" id="first_name" name="first_name" value="{{ first_name }}" required/>
-    
-                <label for="last_name">Last Name:</label>
-                <input type="text" id="last_name" name="last_name" value="{{ last_name }}" required/>
-    
-                <!-- Email -->
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" value="{{ email }}" required/>
-    
-                <!-- Phone -->
-                <label for="phone">Phone:</label>
-                <input type="text" id="phone" name="phone" value="{{ phone }}" required/>
-    
-                <!-- Address -->
-                <label for="address">Address:</label>
-                <input type="text" id="address" name="address" value="{{ address }}" required/>
-    
-                <!-- Submit Button -->
-                <button type="submit" class="save-profile-btn">Save Changes</button>
-            </form>
-        </div>
-    </div>
     
     
     
@@ -362,13 +312,13 @@
     <!-- ***** Welcome Area End ***** -->
 
     <!-- ***** Features Small Start ***** -->
-    <section id="services" class="section home-feature">
+    <!-- <section id="services" class="section home-feature">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
-                    <div class="row">
+                    <div class="row"> -->
                         <!-- ***** Features Small Item Start ***** -->
-                        <div class="col-lg-4 col-md-6 col-sm-6 col-12" data-scroll-reveal="enter bottom move 50px over 0.6s after 0.2s">
+                        <!-- <div class="col-lg-4 col-md-6 col-sm-6 col-12" data-scroll-reveal="enter bottom move 50px over 0.6s after 0.2s">
                             <div class="features-small-item">
                                 <div class="icon">
                                     <i><img src="{% static 'assets/images/featured-item-01.png'%}" alt=""></i>
@@ -378,13 +328,13 @@
                                 </h5>
                                 <p>Customize anything in this template to fit your website needs</p>
                             </div>
-                        </div>
+                        </div> -->
                         
                         
                         <!-- ***** Features Small Item End ***** -->
 
                         <!-- ***** Features Small Item Start ***** -->
-                        <div class="col-lg-4 col-md-6 col-sm-6 col-12" data-scroll-reveal="enter bottom move 50px over 0.6s after 0.4s">
+                        <!-- <div class="col-lg-4 col-md-6 col-sm-6 col-12" data-scroll-reveal="enter bottom move 50px over 0.6s after 0.4s">
                             <div class="features-small-item">
                                 <div class="icon">
                                     <i><img src="{% static 'assets/images/featured-item-01.png'%}" alt=""></i>
@@ -392,11 +342,11 @@
                                 <h5 class="features-title" onclick="window.location.href='{% url 'view_nurses' %}'" style="cursor: pointer;">Home Nurses</h5>
                                 <p>Contact us immediately if you have a question in mind</p>
                             </div>
-                        </div>
+                        </div> -->
                         <!-- ***** Features Small Item End ***** -->
 
                         <!-- ***** Features Small Item Start ***** -->
-                        <div class="col-lg-4 col-md-6 col-sm-6 col-12" data-scroll-reveal="enter bottom move 50px over 0.6s after 0.6s">
+                        <!-- <div class="col-lg-4 col-md-6 col-sm-6 col-12" data-scroll-reveal="enter bottom move 50px over 0.6s after 0.6s">
                             <div class="features-small-item">
                                 <div class="icon">
                                     <i><img src="{% static 'assets/images/featured-item-01.png'%}" alt=""></i>
@@ -404,10 +354,10 @@
                                 <h5 class="features-title" onclick="window.location.href='{% url 'view_electricians' %}'" style="cursor: pointer;">Electricians</h5>
                                 <p>You just need to tell your friends about our free templates</p>
                             </div>
-                        </div>
+                        </div> -->
                         <!-- ***** Features Small Item End ***** -->
                          <!-- ***** Features Small Item Start ***** -->
-                        <div class="col-lg-4 col-md-6 col-sm-6 col-12" data-scroll-reveal="enter bottom move 50px over 0.6s after 0.6s">
+                        <!-- <div class="col-lg-4 col-md-6 col-sm-6 col-12" data-scroll-reveal="enter bottom move 50px over 0.6s after 0.6s">
                             <div class="features-small-item">
                                 <div class="icon">
                                     <i><img src="{% static 'assets/images/featured-item-01.png'%}" alt=""></i>
@@ -415,10 +365,10 @@
                                 <h5 class="features-title"  onclick="window.location.href='{% url 'view_plumbers' %}'" style="cursor: pointer;">Plumbers</h5>
                                 <p>You just need to tell your friends about our free templates</p>
                             </div>
-                        </div>
+                        </div> -->
                         <!-- ***** Features Small Item End ***** -->
                          <!-- ***** Features Small Item Start ***** -->
-                        <div class="col-lg-4 col-md-6 col-sm-6 col-12" data-scroll-reveal="enter bottom move 50px over 0.6s after 0.6s">
+                        <!-- <div class="col-lg-4 col-md-6 col-sm-6 col-12" data-scroll-reveal="enter bottom move 50px over 0.6s after 0.6s">
                             <div class="features-small-item">
                                 <div class="icon">
                                     <i><img src="{% static 'assets/images/featured-item-01.png'%}" alt=""></i>
@@ -426,9 +376,9 @@
                                 <h5 class="features-title" onclick="window.location.href='{% url 'view_carpenters' %}'" style="cursor: pointer;">Carpenters</h5>
                                 <p>You just need to tell your friends about our free templates</p>
                             </div>
-                        </div>
+                        </div> -->
                         <!-- ***** Features Small Item End ***** -->
-                    </div>
+                    <!-- </div>
                 </div>
             </div>
             <div class="row">
@@ -437,7 +387,7 @@
                 </div>
             </div>
         </div>
-    </section>
+    </section> -->
 
     <!-- ***** Features Small End ***** -->
 
@@ -497,7 +447,7 @@
 
     <!-- ***** Home Parallax Start ***** -->
     <section class="mini" id="work-process">
-        <img src="{% static 'assets/images/work-process-bg.png' %}" alt="" class="mini_img">
+        <!-- <img src="{% static 'assets/images/work-process-bg.png' %}" alt="" class="mini_img"> -->
         <div class="mini-content">
             <div class="container">
                 <div class="row">
@@ -561,10 +511,10 @@
     <!-- ***** Home Parallax End ***** -->
 
     <!-- ***** Testimonials Start ***** -->
-    <section class="section" id="testimonials">
-        <div class="container">
+    <!-- <section class="section" id="testimonials">
+        <div class="container"> -->
             <!-- ***** Section Title Start ***** -->
-            <div class="row">
+            <!-- <div class="row">
                 <div class="col-lg-12">
                     <div class="center-heading">
                         <h2 class="section-title">What do they say?</h2>
@@ -575,12 +525,12 @@
                         <p>Here are some Testimonials of the happy users of ServEase</p>
                     </div>
                 </div>
-            </div>
+            </div> -->
             <!-- ***** Section Title End ***** -->
 
-            <div class="row">
+            <!-- <div class="row"> -->
                 <!-- ***** Testimonials Item Start ***** -->
-                <div class="col-lg-4 col-md-6 col-sm-12">
+                <!-- <div class="col-lg-4 col-md-6 col-sm-12">
                     <div class="team-item">
                         <div class="team-content">
                             <i><img src="{% static 'assets/images/testimonial-icon.png'%}" alt=""></i>
@@ -594,11 +544,11 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> -->
                 <!-- ***** Testimonials Item End ***** -->
                 
                 <!-- ***** Testimonials Item Start ***** -->
-                <div class="col-lg-4 col-md-6 col-sm-12">
+                <!-- <div class="col-lg-4 col-md-6 col-sm-12">
                     <div class="team-item">
                         <div class="team-content">
                             <i><img src="{% static 'assets/images/testimonial-icon.png'%}" alt=""></i>
@@ -612,11 +562,11 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> -->
                 <!-- ***** Testimonials Item End ***** -->
                 
                 <!-- ***** Testimonials Item Start ***** -->
-                <div class="col-lg-4 col-md-6 col-sm-12">
+                <!-- <div class="col-lg-4 col-md-6 col-sm-12">
                     <div class="team-item">
                         <div class="team-content">
                             <i><img src="{% static 'assets/images/testimonial-icon.png'%}" alt=""></i>
@@ -630,17 +580,16 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> -->
                 <!-- ***** Testimonials Item End ***** -->
-            </div>
+            <!-- </div>
         </div>
-    </section>
+    </section> -->
     <!-- ***** Testimonials End ***** -->
 
     <!-- ***** Pricing Plans Start ***** -->
-    <section class="section colored" id="pricing-plans">
+    <!-- <section class="section colored" id="pricing-plans">
         <div class="container">
-            <!-- ***** Section Title Start ***** -->
             <div class="row">
                 <div class="col-lg-12">
                     <div class="center-heading">
@@ -653,10 +602,8 @@
                     </div>
                 </div>
             </div>
-            <!-- ***** Section Title End ***** -->
 
             <div class="row">
-                <!-- ***** Pricing Item Start ***** -->
                 <div class="col-lg-4 col-md-6 col-sm-12" data-scroll-reveal="enter bottom move 50px over 0.6s after 0.2s">
                     <div class="pricing-item">
                         <div class="pricing-header">
@@ -682,9 +629,7 @@
                         </div>
                     </div>
                 </div>
-                <!-- ***** Pricing Item End ***** -->
 
-                <!-- ***** Pricing Item Start ***** -->
                 <div class="col-lg-4 col-md-6 col-sm-12" data-scroll-reveal="enter bottom move 50px over 0.6s after 0.4s">
                     <div class="pricing-item active">
                         <div class="pricing-header">
@@ -710,9 +655,7 @@
                         </div>
                     </div>
                 </div>
-                <!-- ***** Pricing Item End ***** -->
 
-                <!-- ***** Pricing Item Start ***** -->
                 <div class="col-lg-4 col-md-6 col-sm-12" data-scroll-reveal="enter bottom move 50px over 0.6s after 0.6s">
                     <div class="pricing-item">
                         <div class="pricing-header">
@@ -738,13 +681,10 @@
                         </div>
                     </div>
                 </div>
-                <!-- ***** Pricing Item End ***** -->
             </div>
         </div>
     </section>
-    <!-- ***** Pricing Plans End ***** -->
 
-    <!-- ***** Counter Parallax Start ***** -->
     <section class="counter">
         <div class="content">
             <div class="container">
@@ -777,12 +717,9 @@
             </div>
         </div>
     </section>
-    <!-- ***** Counter Parallax End ***** -->   
 
-    <!-- ***** Blog Start ***** -->
     <section class="section" id="blog">
         <div class="container">
-            <!-- ***** Section Title Start ***** -->
             <div class="row">
                 <div class="col-lg-12">
                     <div class="center-heading">
@@ -795,7 +732,6 @@
                     </div>
                 </div>
             </div>
-            <!-- ***** Section Title End ***** -->
 
             <div class="row">
                 <div class="col-lg-4 col-md-6 col-sm-12">
@@ -849,12 +785,9 @@
             </div>
         </div>
     </section>
-    <!-- ***** Blog End ***** -->
 
-    <!-- ***** Contact Us Start ***** -->
     <section class="section colored" id="contact-us">
         <div class="container">
-            <!-- ***** Section Title Start ***** -->
             <div class="row">
                 <div class="col-lg-12">
                     <div class="center-heading">
@@ -867,10 +800,8 @@
                     </div>
                 </div>
             </div>
-            <!-- ***** Section Title End ***** -->
 
             <div class="row">
-                <!-- ***** Contact Text Start ***** -->
                 <div class="col-lg-4 col-md-6 col-sm-12">
                     <h5 class="margin-bottom-30">Keep in touch</h5>
                     <div class="contact-text">
@@ -879,9 +810,7 @@
                         <p>You are NOT allowed to re-distribute Softy Pinko template on any template collection websites. Thank you.</p>
                     </div>
                 </div>
-                <!-- ***** Contact Text End ***** -->
 
-                <!-- ***** Contact Form Start ***** -->
                 <div class="col-lg-8 col-md-6 col-sm-12">
                     <div class="contact-form">
                         <form id="contact" action="" method="get">
@@ -910,11 +839,9 @@
                         </form>
                     </div>
                 </div>
-                <!-- ***** Contact Form End ***** -->
             </div>
         </div>
-    </section>
-    <!-- ***** Contact Us End ***** -->
+    </section> -->
     
     <!-- ***** Footer Start ***** -->
     <footer>

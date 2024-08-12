@@ -5,14 +5,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> </title>
+    <title>Edit Electrician</title>
 
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'adm_assets/css/bootstrap.css' %}">
 
-    <link rel="stylesheet" href="{% static 'adm_assets/vendors/iconly/bold.css'%}">
-
+    <link rel="stylesheet" href="{% static 'adm_assets/vendors/iconly/bold.css' %}">
     <link rel="stylesheet" href="{% static 'adm_assets/vendors/perfect-scrollbar/perfect-scrollbar.css' %}">
     <link rel="stylesheet" href="{% static 'adm_assets/vendors/bootstrap-icons/bootstrap-icons.css' %}">
     <link rel="stylesheet" href="{% static 'adm_assets/css/app.css' %}">
@@ -34,85 +33,86 @@
                     </div>
                 </div>
 
-<!-- DashboardPage -->
+                <!-- DashboardPage -->
 
                 <div class="sidebar-menu">
                     <ul class="menu">
                         <li class="sidebar-title">Menu</li>
 
-                        <li class="sidebar-item active ">
+                        <li class="sidebar-item active">
                             <a href="{% url 'dashboard' %}" class='sidebar-link'>
                                 <i class="bi bi-grid-fill"></i>
                                 <span>Dashboard</span>
                             </a>
                         </li>
-<!-- View Users  -->
-                        <li class="sidebar-item  has-sub">
+                        <!-- View Users -->
+                        <li class="sidebar-item has-sub">
                             <a href="#" class='sidebar-link'>
                                 <i class="bi bi-stack"></i>
                                 <span>View Users</span>
                             </a>
-                            <ul class="submenu ">
-                                <li class="submenu-item ">
-                                    <a href="{%url 'full_users'%}">All Users</a>
+                            <ul class="submenu">
+                                <li class="submenu-item">
+                                    <a href="{% url 'full_users' %}">All Users</a>
                                 </li>
-                                <li class="submenu-item ">
-                                    <a href="{%url 'full_customers'%}">Customers</a>
+                                <li class="submenu-item">
+                                    <a href="{% url 'full_customers' %}">Customers</a>
                                 </li>
-                                <li class="submenu-item ">
-                                    <a href="{%url 'full_workers'%}">Workers</a>
+                                <li class="submenu-item">
+                                    <a href="{% url 'full_workers' %}">Workers</a>
                                 </li>
                             </ul>
                         </li>
-<!-- Booking  -->
-                        <li class="sidebar-item  has-sub">
+                        <!-- Booking -->
+                        <li class="sidebar-item has-sub">
                             <a href="#" class='sidebar-link'>
                                 <i class="bi bi-collection-fill"></i>
                                 <span>View Bookings</span>
                             </a>
-                            <ul class="submenu ">
-                                <li class="submenu-item ">
+                            <ul class="submenu">
+                                <li class="submenu-item">
                                     <a href="#">New Requests</a>
                                 </li>
-                                <li class="submenu-item ">
+                                <li class="submenu-item">
                                     <a href="#">Allocated Bookings</a>
                                 </li>
-                                <li class="submenu-item ">
+                                <li class="submenu-item">
                                     <a href="#">All Bookings</a>
                                 </li>
                             </ul>
                         </li>
-<!-- Manage Customers  -->
-                        <li class="sidebar-item ">
-                            <a href="{%url 'manage_customers'%}" class='sidebar-link'>
+                        <!-- Manage Customers -->
+                        <li class="sidebar-item">
+                            <a href="{% url 'manage_customers' %}" class='sidebar-link'>
                                 <i class="bi bi-stack"></i>
                                 <span>Manage Customers</span>
                             </a>
                         </li>
-<!-- Manage Workers  -->
-                        <li class="sidebar-item  has-sub">
+                        <!-- Manage Workers -->
+                        <li class="sidebar-item has-sub">
                             <a href="#" class='sidebar-link'>
                                 <i class="bi bi-stack"></i>
                                 <span>Manage Workers</span>
                             </a>
-                            <ul class="submenu ">
-                                <li class="submenu-item ">
-                                    <a href="{% url 'manage_home_nurses' %}">Home Nurse</a>
+                            <ul class="submenu">
+                                <li class="submenu-item">
+                                    <a href="#">Home Nurse</a>
                                 </li>
-                                <li class="submenu-item ">
+                                <li class="submenu-item">
                                     <a href="{% url 'manage_house_maids' %}">House Maid</a>
                                 </li>
-                                <li class="submenu-item ">
+                                <li class="submenu-item">
                                     <a href="{% url 'manage_electricians' %}">Electrician</a>
                                 </li>
-                                <li class="submenu-item ">
+                                <li class="submenu-item">
                                     <a href="{% url 'manage_plumbers' %}">Plumber</a>
                                 </li>
-                                <li class="submenu-item ">
+                                <li class="submenu-item">
                                     <a href="{% url 'manage_carpenters' %}">Carpenter</a>
                                 </li>
                             </ul>
                         </li>
+                    </ul>
                 </div>
                 <button class="sidebar-toggler btn x"><i data-feather="x"></i></button>
             </div>
@@ -125,12 +125,12 @@
                 </a>
             </header>
 
-            <div class="page-heading">
+            <ul class="page-heading">
                 <div class="page-title">
                     <div class="row">
                         <div class="col-12 col-md-6 order-md-1 order-last">
-                            <h3>Edit Details of {{ nurse.firstname }}</h3>
-                            <p class="text-subtitle text-muted">Update the details of home nurse</p>
+                            <h3>Edit Details of {{ electrician.firstname }}</h3>
+                            <p class="text-subtitle text-muted">Update the details of electrician</p>
                         </div>
                         <div class="col-12 col-md-6 order-md-2 order-first">
                             <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
@@ -143,7 +143,6 @@
                     </div>
                 </div>
 
-                <!-- Basic multiple Column Form section start -->
                 <section id="multiple-column-form">
                     <div class="row match-height">
                         <div class="col-12">
@@ -161,7 +160,7 @@
                                                         <label for="first-name-column">First Name</label>
                                                         <input type="text" id="first-name-column" class="form-control" 
                                                             placeholder="First Name" name="firstname" 
-                                                            value="{{ nurse.firstname }}" required>
+                                                            value="{{ electrician.firstname }}" required>
                                                         <div id="firstname-error" class="error-message text-danger"></div>
                                                     </div>
                                                 </div>
@@ -170,7 +169,7 @@
                                                         <label for="last-name-column">Last Name</label>
                                                         <input type="text" id="last-name-column" class="form-control" 
                                                             placeholder="Last Name" name="lastname" 
-                                                            value="{{ nurse.lastname }}" required>
+                                                            value="{{ electrician.lastname }}" required>
                                                         <div id="lastname-error" class="error-message text-danger"></div>
                                                     </div>
                                                 </div>
@@ -179,7 +178,7 @@
                                                         <label for="email-id-column">Email</label>
                                                         <input type="email" id="email-id-column" class="form-control" 
                                                             placeholder="Email" name="email" 
-                                                            value="{{ nurse.email }}" readonly>
+                                                            value="{{ electrician.email }}" readonly>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6 col-12">
@@ -187,7 +186,7 @@
                                                         <label for="phone-column">Phone</label>
                                                         <input type="text" id="phone-column" class="form-control" 
                                                             placeholder="Phone" name="phone" 
-                                                            value="{{ nurse.phone }}" required>
+                                                            value="{{ electrician.phone }}" required>
                                                         <div id="phone-error" class="error-message text-danger"></div>
                                                     </div>
                                                 </div>
@@ -196,7 +195,7 @@
                                                         <label for="experience-column">Experience</label>
                                                         <input type="text" id="experience-column" class="form-control" 
                                                             placeholder="Experience" name="experience" 
-                                                            value="{{ nurse.experience }}" required>
+                                                            value="{{ electrician.experience }}" required>
                                                         <div id="experience-error" class="error-message text-danger"></div>
                                                     </div>
                                                 </div>
@@ -204,8 +203,8 @@
                                                     <div class="form-group">
                                                         <label for="availability-column">Availability</label>
                                                         <select id="availability-column" class="form-control" name="availability" required>
-                                                            <option value="1" {% if nurse.availability %}selected{% endif %}>Available</option>
-                                                            <option value="0" {% if not nurse.availability %}selected{% endif %}>Not Available</option>
+                                                            <option value="1" {% if electrician.availability %}selected{% endif %}>Available</option>
+                                                            <option value="0" {% if not electrician.availability %}selected{% endif %}>Not Available</option>
                                                         </select>
                                                         <div id="availability-error" class="error-message text-danger"></div>
                                                     </div>
@@ -223,7 +222,7 @@
                         </div>
                     </div>
                 </section>
-                <!-- // Basic multiple Column Form section end -->
+
             </div>
 
             <footer>

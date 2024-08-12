@@ -56,6 +56,18 @@ def manage_home_nurses(request):
     nurses = Home_Nurse.objects.all()  # Fetch all home nurses from the database
     return render(request, 'admin_temp/manage_home_nurses.html', {'nurses': nurses})
 
+def manage_plumbers(request):
+    plumbers = Plumber.objects.all()  # Fetch all plumbers from the database
+    return render(request, 'admin_temp/manage_plumbers.html', {'plumbers': plumbers})
+
+def manage_electrician(request):
+    electricians = Electrician.objects.all()  # Fetch all electricians from the database
+    return render(request, 'admin_temp/manage_electricians.html', {'electricians': electricians})
+
+def manage_carpenters(request):
+    carpenters = Carpenter.objects.all()  # Fetch all carpenters from the database
+    return render(request, 'admin_temp/manage_carpenters.html', {'carpenters': carpenters})
+
 def edit_house_maid(request, maid_id):
     maid = get_object_or_404(House_Maid, pk=maid_id)
     user = get_object_or_404(Users, user_id=maid.user_id.user_id)
@@ -118,6 +130,98 @@ def edit_home_nurse(request, nurse_id):
 
     return render(request, 'admin_temp/edit_home_nurses.html', {'nurse': nurse})
 
+def edit_electrician(request, electrician_id):
+    electrician = get_object_or_404(Electrician, pk=electrician_id)
+    user = get_object_or_404(Users, user_id=electrician.user_id.user_id)
+
+    if request.method == 'POST':
+        # Retrieve data from the form
+        firstname = request.POST.get('firstname', '')
+        lastname = request.POST.get('lastname', '')
+        phone = request.POST.get('phone', '')
+        experience = request.POST.get('experience', '')
+        availability = request.POST.get('availability') == '1'  # Convert to boolean
+
+        # Update Electrician fields
+        electrician.firstname = firstname
+        electrician.lastname = lastname
+        electrician.phone = phone
+        electrician.experience = experience
+        electrician.availability = availability
+        electrician.save()
+
+        # Update Users table fields
+        user.firstname = firstname
+        user.lastname = lastname
+        user.phone = phone
+        user.availability = availability
+        user.save()
+
+        return redirect('manage_electricians')  # Redirect to the manage_electricians view
+
+    return render(request, 'admin_temp/edit_electricians.html', {'electrician': electrician})
+
+def edit_plumber(request, plumber_id):
+    plumber = get_object_or_404(Plumber, pk=plumber_id)
+    user = get_object_or_404(Users, user_id=plumber.user_id.user_id)
+
+    if request.method == 'POST':
+        # Retrieve data from the form
+        firstname = request.POST.get('firstname', '')
+        lastname = request.POST.get('lastname', '')
+        phone = request.POST.get('phone', '')
+        experience = request.POST.get('experience', '')
+        availability = request.POST.get('availability') == '1'  # Convert to boolean
+
+        # Update Plumber fields
+        plumber.firstname = firstname
+        plumber.lastname = lastname
+        plumber.phone = phone
+        plumber.experience = experience
+        plumber.availability = availability
+        plumber.save()
+
+        # Update Users table fields
+        user.firstname = firstname
+        user.lastname = lastname
+        user.phone = phone
+        user.save()
+
+        return redirect('manage_plumbers')  # Redirect to the manage_plumbers view
+
+    return render(request, 'admin_temp/edit_plumbers.html', {'plumber': plumber})
+
+
+def edit_carpenter(request, carpenter_id):
+    carpenter = get_object_or_404(Carpenter, pk=carpenter_id)
+    user = get_object_or_404(Users, user_id=carpenter.user_id.user_id)
+
+    if request.method == 'POST':
+        # Retrieve data from the form
+        firstname = request.POST.get('firstname', '')
+        lastname = request.POST.get('lastname', '')
+        phone = request.POST.get('phone', '')
+        experience = request.POST.get('experience', '')
+        availability = request.POST.get('availability') == '1'  # Convert to boolean
+
+        # Update Carpenter fields
+        carpenter.firstname = firstname
+        carpenter.lastname = lastname
+        carpenter.phone = phone
+        carpenter.experience = experience
+        carpenter.availability = availability
+        carpenter.save()
+
+        # Update Users table fields
+        user.firstname = firstname
+        user.lastname = lastname
+        user.phone = phone
+        user.availability = availability
+        user.save()
+
+        return redirect('manage_carpenters')  # Redirect to the manage_carpenters view
+
+    return render(request, 'admin_temp/edit_carpenters.html', {'carpenter': carpenter})
 
 def change_status(request, user_id):
     customer = get_object_or_404(Users, user_id=user_id, usertype='customer')

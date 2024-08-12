@@ -128,7 +128,7 @@
                 <div class="page-title">
                     <div class="row">
                         <div class="col-12 col-md-6 order-md-1 order-last">
-                            <h3>House Maids</h3>
+                            <h3>Plumbers</h3>
                             <p class="text-subtitle text-muted">Listing the basic details</p>
                         </div>
                         <div class="col-12 col-md-6 order-md-2 order-first">
@@ -144,7 +144,7 @@
                 <section class="section">
                     <div class="card">
                         <div class="card-header">
-                            Manage House Maids
+                            Manage Plumbers
                         </div>
                         <div class="card-body">
                             <table class="table table-striped" id="table1">
@@ -155,29 +155,30 @@
                                         <th>Phone</th>
                                         <th>Experience</th>
                                         <th>Availability</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for maid in maids %}
+                                    {% for plumber in plumbers %}
                                     <tr>
-                                        <td>{{ maid.firstname }} {{ maid.lastname }}</td>
-                                        <td>{{ maid.email }}</td>
-                                        <td>{{ maid.phone }}</td>
-                                        <td>{{ maid.experience }}</td>
+                                        <td>{{ plumber.firstname }} {{ plumber.lastname }}</td>
+                                        <td>{{ plumber.email }}</td>
+                                        <td>{{ plumber.phone }}</td>
+                                        <td>{{ plumber.experience }}</td>
                                         <td>
-                                            {% if maid.availability %}
+                                            {% if plumber.availability %}
                                                 <span class="badge bg-success">Available</span>
                                             {% else %}
                                                 <span class="badge bg-danger">Not Available</span>
                                             {% endif %}
                                         </td>
                                         <td>
-                                            <a href="{% url 'edit_house_maid' maid.maid_id %}" class="btn btn-primary btn-sm">Edit</a> <!-- Edit button -->
+                                            <a href="{% url 'edit_plumber' plumber.plumber_id %}" class="btn btn-primary btn-sm">Edit</a>
                                         </td>
                                     </tr>
                                     {% empty %}
                                     <tr>
-                                        <td colspan="5">No house maids found.</td>
+                                        <td colspan="6">No plumbers found.</td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
@@ -187,6 +188,7 @@
                 </section>
                 
             </div>
+            
 
             <footer>
                 <div class="footer clearfix mb-0 text-muted">

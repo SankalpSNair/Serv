@@ -117,6 +117,7 @@
                 <button class="sidebar-toggler btn x"><i data-feather="x"></i></button>
             </div>
         </div>
+
         <div id="main">
             <header class="mb-3">
                 <a href="#" class="burger-btn d-block d-xl-none">
@@ -128,23 +129,25 @@
                 <div class="page-title">
                     <div class="row">
                         <div class="col-12 col-md-6 order-md-1 order-last">
-                            <h3>House Maids</h3>
-                            <p class="text-subtitle text-muted">Listing the basic details</p>
+                            <h3>Manage Electricians</h3>
+                            <p class="text-subtitle text-muted">View and manage all carpenters</p>
                         </div>
                         <div class="col-12 col-md-6 order-md-2 order-first">
                             <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
                                 <ol class="breadcrumb">
                                     <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
-                                    <li class="breadcrumb-item active" aria-current="page">DataTable</li>
+                                    <li class="breadcrumb-item active" aria-current="page">Customers</li>
                                 </ol>
                             </nav>
                         </div>
                     </div>
                 </div>
+
+                <!-- Carpenters Table -->
                 <section class="section">
                     <div class="card">
                         <div class="card-header">
-                            Manage House Maids
+                            Manage Electricians
                         </div>
                         <div class="card-body">
                             <table class="table table-striped" id="table1">
@@ -155,29 +158,30 @@
                                         <th>Phone</th>
                                         <th>Experience</th>
                                         <th>Availability</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for maid in maids %}
+                                    {% for electrician in electricians %}
                                     <tr>
-                                        <td>{{ maid.firstname }} {{ maid.lastname }}</td>
-                                        <td>{{ maid.email }}</td>
-                                        <td>{{ maid.phone }}</td>
-                                        <td>{{ maid.experience }}</td>
+                                        <td>{{ electrician.firstname }} {{ electrician.lastname }}</td>
+                                        <td>{{ electrician.email }}</td>
+                                        <td>{{ electrician.phone }}</td>
+                                        <td>{{ electrician.experience }}</td>
                                         <td>
-                                            {% if maid.availability %}
+                                            {% if electrician.availability %}
                                                 <span class="badge bg-success">Available</span>
                                             {% else %}
                                                 <span class="badge bg-danger">Not Available</span>
                                             {% endif %}
                                         </td>
                                         <td>
-                                            <a href="{% url 'edit_house_maid' maid.maid_id %}" class="btn btn-primary btn-sm">Edit</a> <!-- Edit button -->
+                                            <a href="{% url 'edit_electrician' electrician.electrician_id %}" class="btn btn-primary btn-sm">Edit</a>
                                         </td>
                                     </tr>
                                     {% empty %}
                                     <tr>
-                                        <td colspan="5">No house maids found.</td>
+                                        <td colspan="6">No electricians found.</td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
@@ -190,30 +194,16 @@
 
             <footer>
                 <div class="footer clearfix mb-0 text-muted">
-                    <div class="float-start">
-                        
-                    </div>
-                    <div class="float-end">
-                        
-                    </div>
+                    <div class="float-start"></div>
+                    <div class="float-end"></div>
                 </div>
             </footer>
         </div>
     </div>
+
     <script src="{% static 'adm_assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js' %}"></script>
     <script src="{% static 'adm_assets/js/bootstrap.bundle.min.js' %}"></script>
-
-    <script src="{% static 'adm_assets/vendors/apexcharts/apexcharts.js' %}"></script>
-    <script src="{% static 'adm_assets/js/pages/dashboard.js' %}"></script>
-
     <script src="{% static 'adm_assets/js/main.js' %}"></script>
-    <script>
-        // Simple Datatable
-        let table1 = document.querySelector('#table1');
-        let dataTable = new simpleDatatables.DataTable(table1);
-    </script>
-
-    <script src="{% static 'adm_assets/js/main.js'%}"></script>
 </body>
 
 </html>

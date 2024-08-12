@@ -27,6 +27,12 @@ path('admin/', admin.site.urls),
     path('edit_house_maid/<int:maid_id>/', views.edit_house_maid, name='edit_house_maid'),
     path('manage_home_nurses/', views.manage_home_nurses, name='manage_home_nurses'),
     path('edit_home_nurse/<int:nurse_id>/', views.edit_home_nurse, name='edit_home_nurse'),
+    path('manage_carpenters/', views.manage_carpenters, name='manage_carpenters'),
+    path('edit_carpenter/<int:carpenter_id>/', views.edit_carpenter, name='edit_carpenter'),
+    path('manage_plumbers/', views.manage_plumbers, name='manage_plumbers'),
+    path('edit_plumber/<int:plumber_id>/', views.edit_plumber, name='edit_plumber'),
+    path('manage_electricians/', views.manage_electrician, name='manage_electricians'),
+    path('edit_electrician/<int:electrician_id>/', views.edit_electrician, name='edit_electrician'),
     
 
 # admin side end

@@ -177,7 +177,12 @@
                                                         <label for="email-id-column">Email</label>
                                                         <input type="email" id="email-id-column" class="form-control"
                                                             placeholder="Email" name="email"
-                                                            value="{{ maid.email }}" required>
+                                                            value="{{ maid.email }}" required
+                                                            pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                                                            title="Please enter a valid email address.">
+                                                        <div class="invalid-feedback">
+                                                            Please provide a valid email address.
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6 col-12">
@@ -282,6 +287,17 @@
     <script src="{% static 'adm_assets/js/main.js' %}"></script>
 
     <!-- JavaScript for form validation -->
+    <script>
+        document.getElementById('email-id-column').addEventListener('input', function() {
+            var emailField = this;
+            var pattern = new RegExp("^[a-zA-Z]+[a-zA-Z0-9._%+-]*@[a-zA-Z]+\.[a-zA-Z]{2,}$");
+            if (emailField.value !== "" && !pattern.test(emailField.value)) {
+                emailField.setCustomValidity("Please enter a valid email address. The domain should contain only letters before the dot (.) and a valid top-level domain.");
+            } else {
+                emailField.setCustomValidity("");
+            }
+        });
+    </script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const firstNameInput = document.getElementById('first-name-column');

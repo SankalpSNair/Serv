@@ -134,82 +134,83 @@
 
     <!-- JS -->
     <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
-    <script>
-        function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
+<script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
             }
         }
+        return cookieValue;
     }
-    return cookieValue;
-}
 
-const csrftoken = getCookie('csrftoken');
+    const csrftoken = getCookie('csrftoken');
 
-$.ajaxSetup({
-    beforeSend: function (xhr, settings) {
-        if (!/^(GET|HEAD|OPTIONS|TRACE)$/.test(settings.type) && !this.crossDomain) {
-            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+    $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+            if (!/^(GET|HEAD|OPTIONS|TRACE)$/.test(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
         }
+    });
+
+    function validateForm() {
+        var fname = document.getElementById("fname").value;
+        var lname = document.getElementById("lname").value;
+        var email = document.getElementById("email").value;
+        var password = document.getElementById("password").value;
+        var re_pass = document.getElementById("re_pass").value;
+        var isValid = true;
+
+        // Clear previous error messages
+        document.getElementById("fname-error").textContent = "";
+        document.getElementById("lname-error").textContent = "";
+        document.getElementById("email-error").textContent = "";
+        document.getElementById("password-error").textContent = "";
+        document.getElementById("re_pass-error").textContent = "";
+
+        // Validate first name (only alphabets)
+        var nameRegex = /^[A-Za-z]+$/;
+        if (!fname.match(nameRegex)) {
+            document.getElementById("fname-error").textContent = "First name should only contain alphabets.";
+            isValid = false;
+        }
+
+        // Validate last name (only alphabets)
+        if (!lname.match(nameRegex)) {
+            document.getElementById("lname-error").textContent = "Last name should only contain alphabets.";
+            isValid = false;
+        }
+
+        // Validate email (letters between @ and ., valid domain)
+        var emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z]+\.[a-zA-Z]{2,}$/;
+        if (!email.match(emailRegex)) {
+            document.getElementById("email-error").textContent = "Enter a valid email address (use letters only between '@' and '.' and a valid domain).";
+            isValid = false;
+        }
+
+        // Validate password (8-16 characters, uppercase, lowercase, digit, special character)
+        var passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,16}$/;
+        if (!password.match(passwordRegex)) {
+            document.getElementById("password-error").textContent = "Password must be 8-16 characters long, include at least one uppercase letter, one lowercase letter, one digit, and one special character.";
+            isValid = false;
+        }
+
+        // Validate repeated password
+        if (password !== re_pass) {
+            document.getElementById("re_pass-error").textContent = "Passwords do not match.";
+            isValid = false;
+        }
+
+        return isValid;
     }
-});
+</script>
 
-        function validateForm() {
-            var fname = document.getElementById("fname").value;
-            var lname = document.getElementById("lname").value;
-            var email = document.getElementById("email").value;
-            var password = document.getElementById("password").value;
-            var re_pass = document.getElementById("re_pass").value;
-            var isValid = true;
-
-            // Default
-            document.getElementById("fname-error").textContent = "";
-            document.getElementById("lname-error").textContent = "";
-            document.getElementById("email-error").textContent = "";
-            document.getElementById("password-error").textContent = "";
-            document.getElementById("re_pass-error").textContent = "";
-
-            // Validate first name (only alphabets)
-            var nameRegex = /^[A-Za-z]+$/;
-            if (!fname.match(nameRegex)) {
-                document.getElementById("fname-error").textContent = "First name should only contain alphabets.";
-                isValid = false;
-            }
-
-            // Validate last name (only alphabets)
-            if (!lname.match(nameRegex)) {
-                document.getElementById("lname-error").textContent = "Last name should only contain alphabets.";
-                isValid = false;
-            }
-
-            // Validate email
-            var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!email.match(emailRegex)) {
-                document.getElementById("email-error").textContent = "Enter a valid email address.";
-                isValid = false;
-            }
-
-            // Validate password
-            var passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,16}$/;
-            if (!password.match(passwordRegex)) {
-                document.getElementById("password-error").textContent = "8 characters long,include at least one uppercase letter,special character and number.";
-                isValid = false;
-            }
-
-            // Validate repeated password
-            if (password !== re_pass) {
-                document.getElementById("re_pass-error").textContent = "Passwords do not match.";
-                isValid = false;
-            }
-
-            return isValid;
-        }
-    </script>
 </body>
 </html>

@@ -158,12 +158,13 @@ DEFAULT_FROM_EMAIL = 'webmaster@localhost'
 
 # ForgotPassword ends
 
-#new
-
+ 
 AUTHENTICATION_BACKENDS =[
     'social_core.backends.google.GoogleOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 ]
+# AUTH_USER_MODEL = 'Home_app.Users'
+
 
 LOGIN_URL = 'login'
 

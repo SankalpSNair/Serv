@@ -985,7 +985,7 @@ def custom_password_reset(request):
         if form.is_valid():
             email = form.cleaned_data['email']
             try:
-                user = User.objects.get(email=email)
+                user = Users.objects.get(email=email)
                 current_site = get_current_site(request)
                 mail_subject = 'Reset your password'
                 uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
@@ -1013,7 +1013,7 @@ def custom_password_reset(request):
 def custom_password_reset_confirm(request, uidb64, token):
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
-        user = User.objects.get(pk=uid)
+        user = Users.objects.get(pk=uid)
     except (TypeError, ValueError, OverflowError, User.DoesNotExist):
         user = None
     

@@ -418,77 +418,67 @@ input, optgroup, select, textarea {
     }
     });
     </script>
-    <script>
-document.addEventListener("DOMContentLoaded", function() {
-    var editBtn = document.getElementById('edit-profile-btn');
-    var saveBtn = document.getElementById('save-profile-btn');
-    var inputs = document.querySelectorAll('.profile-table input, .profile-table textarea');
-    var profileForm = document.querySelector('form');
-    var profilePicInput = document.getElementById('profile-pic-input');
-    var namePattern = /^[A-Za-z\s]+$/; // Pattern to allow only letters and spaces
-    
-    editBtn.addEventListener('click', function() {
-        inputs.forEach(function(input) {
-            input.removeAttribute('readonly');
+<!-- Profile Edit and Validation Script -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var editBtn = document.getElementById('edit-profile-btn');
+        var saveBtn = document.getElementById('save-profile-btn');
+        var inputs = document.querySelectorAll('.profile-grid input, .profile-grid textarea');
+        var profileForm = document.querySelector('form');
+        var profilePicInput = document.getElementById('profile-pic-input');
+        var profilePicError = document.getElementById('profile-pic-error');
+        var firstNameInput = document.getElementById('first-name');
+        var lastNameInput = document.getElementById('last-name');
+        var namePattern = /^[A-Za-z\s]+$/; // Pattern to allow only letters and spaces
+        
+        // Enable editing when Edit button is clicked
+        editBtn.addEventListener('click', function() {
+            inputs.forEach(function(input) {
+                input.removeAttribute('readonly');
+            });
+            saveBtn.style.display = 'inline-block';
+            editBtn.style.display = 'none';
         });
-        saveBtn.style.display = 'inline-block';
-        editBtn.style.display = 'none';
-    });
-
-    profileForm.addEventListener('submit', function(event) {
-        var phone = document.getElementById('phone').value;
-        var address = document.getElementById('address').value;
-        var firstName = document.getElementById('first-name').value;
-        var lastName = document.getElementById('last-name').value;
-        var profilePic = profilePicInput.files[0];
-        var phonePattern = /^[0-9]{10}$/; // Pattern for 10-digit phone number
-
-        var errors = {
-            'phone-error': '',
-            'address-error': '',
-            'first-name-error': '',
-            'last-name-error': '',
-            'profile-pic-error': ''
-        };
-
-        // Phone validation
-        if (!phonePattern.test(phone)) {
-            errors['phone-error'] = "Please enter a valid 10-digit phone number.";
-        }
-
-        // Address validation
-        if (address.trim() === "") {
-            errors['address-error'] = "Address cannot be empty.";
-        }
-
-        // Name validation
-        if (!namePattern.test(firstName)) {
-            errors['first-name-error'] = "First name can only contain letters and spaces.";
-        }
-
-        if (!namePattern.test(lastName)) {
-            errors['last-name-error'] = "Last name can only contain letters and spaces.";
-        }
-
-        // File validation
-        if (profilePic) {
-            var fileType = profilePic.type;
-            if (!fileType.startsWith('image/')) {
-                errors['profile-pic-error'] = "Please upload a valid image file.";
+    
+        // Validate form on submission
+        profileForm.addEventListener('submit', function(event) {
+            var isValid = true;
+    
+            // Validate first name
+            if (!namePattern.test(firstNameInput.value)) {
+                document.getElementById('first-name-error').innerText = 'Invalid first name. Only letters and spaces are allowed.';
+                isValid = false;
+            } else {
+                document.getElementById('first-name-error').innerText = '';
             }
-        }
-
-        // Display errors
-        for (var id in errors) {
-            document.getElementById(id).textContent = errors[id];
-        }
-
-        // Prevent form submission if there are errors
-        if (Object.values(errors).some(error => error !== '')) {
-            event.preventDefault();
-        }
+    
+            // Validate last name
+            if (!namePattern.test(lastNameInput.value)) {
+                document.getElementById('last-name-error').innerText = 'Invalid last name. Only letters and spaces are allowed.';
+                isValid = false;
+            } else {
+                document.getElementById('last-name-error').innerText = '';
+            }
+    
+            // Validate profile picture if changed
+            if (profilePicInput.files.length > 0) {
+                var file = profilePicInput.files[0];
+                var allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    
+                if (!allowedTypes.includes(file.type)) {
+                    profilePicError.innerText = 'Invalid file type. Only JPEG, PNG, and GIF are allowed.';
+                    isValid = false;
+                } else {
+                    profilePicError.innerText = '';
+                }
+            }
+    
+            if (!isValid) {
+                event.preventDefault(); // Prevent form submission if validation fails
+            }
+        });
     });
-});
-</script>
+    </script>
+    
   </body>
 </html>

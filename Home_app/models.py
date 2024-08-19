@@ -128,3 +128,7 @@ class Booking(models.Model):
         ('Completed', 'Completed'),
         ('Cancelled', 'Cancelled'),
     ], default='Pending')
+    
+    # New fields for service type and description
+    service_type = models.CharField(max_length=100, blank=True)
+    description = models.TextField(blank=True)

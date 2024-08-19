@@ -1281,6 +1281,8 @@ def book_carpenter(request, carpenter_id):
         appointment_date = request.POST.get('appointment_date')
         appointment_time = request.POST.get('appointment_time')
         address = request.POST.get('address')
+        service_type = request.POST.get('service_type')  # New line
+        description = request.POST.get('description')  # New line
         
         # Fetch the customer (logged-in user) or return an error if not found
         try:
@@ -1294,7 +1296,9 @@ def book_carpenter(request, carpenter_id):
                 appointment_date=appointment_date,
                 appointment_time=appointment_time,
                 address=address,
-                status='Pending'  # Default status
+                status='Pending',  # Default status
+                service_type=service_type,  # New line
+                description=description  # New line
             )
             booking.save()
             
@@ -1450,6 +1454,5 @@ def searchbookstatus(request):
         'bookings': bookings
     }
     return render(request, 'admin_temp/new_bookings.html', context)
-
 
 

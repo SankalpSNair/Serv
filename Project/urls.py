@@ -59,6 +59,9 @@ path('admin/', admin.site.urls),
     path('book_plumber/<int:plumber_id>/', views.book_plumber, name='book_plumber'),
     path('services/', views.view_services, name='services'),
     path('profile/', views.customer_profile, name='profile'),
+    path('email-search/', views.emailsearch, name='emailsearch'),
+    path('users-email-search/', views.usersemailsearch, name='useremailsearch'),
+    path('search-book-status/', views.searchbookstatus, name='searchbookstatus'),
 
 ] 
 if settings.DEBUG:

@@ -919,6 +919,7 @@ def customer_profile(request):
                 'last_name': user.lastname,
                 'email': user.email,
                 'phone': user.phone,
+                'usertype': user.usertype,
                 'address': user.address,
                 'profile_picture_url': user.image.url if user.image else '/media/default_profile_pic.png',
             }
@@ -967,6 +968,7 @@ def update_profile(request):
             context = {
                 'first_name': user.firstname,
                 'last_name': user.lastname,
+                'usertype': user.usertype,
                 'email': user.email,
                 'phone': user.phone,
                 'address': user.address,
@@ -1352,3 +1354,56 @@ def book_electrician(request, electrician_id):
         'electrician': electrician
     }
     return render(request, 'registration/book_electrician.html', context)
+
+def emailsearch(request):
+
+    # Get the search query from the GET request
+    email_query = request.GET.get('email', '')
+    
+    # Filter workers by email if a search query is provided, otherwise return all workers
+    if email_query:
+        workers = Users.objects.filter(email__icontains=email_query)
+    else:
+        workers = Users.objects.all()
+    
+    # Pass the filtered workers to the template
+    context = {
+        'workers': workers
+    }
+    return render(request, 'admin_temp/full_workers.html', context)
+
+def usersemailsearch(request):
+
+    # Get the search query from the GET request
+    email_query = request.GET.get('email', '')
+    
+    # Filter users by email if a search query is provided, otherwise return all users
+    if email_query:
+        customers = Users.objects.filter(email__icontains=email_query)
+    else:
+        customers = Users.objects.all()
+    
+    # Pass the filtered users to the template
+    context = {
+        'customers': customers
+    }
+    return render(request, 'admin_temp/full_customers.html', context)
+
+def searchbookstatus(request):
+    # Get the status query from the GET request
+    status_query = request.GET.get('status', '')
+
+    # Filter bookings by status if a search query is provided, otherwise return all bookings
+    if status_query:
+        bookings = Booking.objects.filter(status__iexact=status_query.capitalize())
+    else:
+        bookings = Booking.objects.all()
+
+    # Pass the filtered bookings to the template
+    context = {
+        'bookings': bookings
+    }
+    return render(request, 'admin_temp/new_bookings.html', context)
+
+
+

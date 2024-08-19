@@ -135,7 +135,7 @@
                             <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
                                 <ol class="breadcrumb">
                                     <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
-                                    <li class="breadcrumb-item active" aria-current="page">Pending</li>
+                                    <li class="breadcrumb-item active" aria-current="page"><a href="{% url 'new_bookings' %}">Bookings</a></li>
                                 </ol>
                             </nav>
                         </div>
@@ -143,8 +143,19 @@
                 </div>
                 <section class="section">
                     <div class="card">
-                        <div class="card-header">
-                            <h2 class="mb-4">New Bookings</h2>
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div class="card-header">
+                                Manage Bookings
+                            </div>
+                            <form method="GET" action="{% url 'searchbookstatus' %}">
+                                <div class="input-group">
+                                    <span class="input-group-text" id="basic-addon1">
+                                        <i class="bi bi-search"></i>
+                                    </span>
+                                    <input type="text" class="form-control" name="status" placeholder="Search by status" aria-label="Search by status" aria-describedby="button-addon2">
+                                    <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Search</button>
+                                </div>
+                            </form>
                         </div>
                         <div class="card-body">
                             <table class="table table-striped" id="table1">

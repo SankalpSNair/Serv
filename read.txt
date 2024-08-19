@@ -23,3 +23,5 @@ PS C:\Users\Aquarius\Desktop\Project\git_log> cd ServEase
 PS C:\Users\Aquarius\Desktop\Project\git_log\ServEase> git log > git-log.txt
 PS C:\Users\Aquarius\Desktop\Project\git_log\ServEase> git log --pretty=format:"%h - %an, %ad : %s" --date=short --graph --all --decorate > git-log.txt
 PS C:\Users\Aquarius\Desktop\Project\git_log\ServEase> 
+
+

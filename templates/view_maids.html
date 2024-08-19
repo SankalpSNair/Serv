@@ -174,7 +174,8 @@
                                 <div class="blog-content">
                                     <h3>{{ maid.firstname }} {{ maid.lastname }}</h3>
                                     <div class="text">
-                                        <p>Address: {{ maid.address }}</p>
+                                        <!-- <p>Address: {{ maid.address }}</p> -->
+                                        <p>Experience: {{maid.experience}} Year/Years</p>
                                         <!-- <p>Phone: {{ maid.phone }}</p> -->
                                         <p>Place: {{ maid.place }}</p>
                                         <p>District: {{ maid.district }}</p>
@@ -184,10 +185,6 @@
                             </div>
                         </div>
                     {% endfor %}
-
-
-
-
                 </div>
             </div>
 

@@ -329,8 +329,13 @@ input, optgroup, select, textarea {
             }
         });
     
-        // Set the minimum date to today
-        document.getElementById('appointment_date').setAttribute('min', new Date().toISOString().split('T')[0]);
+        // Set the minimum date to today and the maximum date to one and a half years from today
+        var today = new Date();
+        var maxDate = new Date();
+        maxDate.setFullYear(today.getFullYear(), today.getMonth() + 18);
+    
+        document.getElementById('appointment_date').setAttribute('min', today.toISOString().split('T')[0]);
+        document.getElementById('appointment_date').setAttribute('max', maxDate.toISOString().split('T')[0]);
     </script>
 
     <!-- For profile -->

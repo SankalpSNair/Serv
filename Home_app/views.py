@@ -1036,60 +1036,106 @@ def custom_password_reset_confirm(request, uidb64, token):
 def custom_password_reset_done(request):
     return render(request, 'registration/password_reset_done.html')
 
-def view_maids(request):
-    user_id = request.session.get('user_id')
 
-    if user_id:
-        # Fetch all House_Maid objects
-        maids = House_Maid.objects.all()
-        return render(request, 'view_maids.html', {'maids': maids})
+def view_maids(request):
+    # Get all unique districts from the Maid model
+    districts = House_Maid.objects.values_list('district', flat=True).distinct()
+    
+    # Get the selected district from the query parameters
+    selected_district = request.GET.get('district', '')
+    
+    # Filter maids based on the selected district
+    if selected_district:
+        maids = House_Maid.objects.filter(district=selected_district)
     else:
-        messages.warning(request, 'You need to log in first.')
-        return redirect('login')
+        maids = House_Maid.objects.all()
+    
+    context = {
+        'maids': maids,
+        'districts': districts,
+        'selected_district': selected_district,
+    }
+    return render(request, 'view_maids.html', context)
 
 def view_plumbers(request):
-    user_id = request.session.get('user_id')
-
-    if user_id:
-        # Fetch all Plumber objects
-        plumbers = Plumber.objects.all()
-        return render(request, 'view_plumbers.html', {'plumbers': plumbers})
+    # Get all unique districts from the Plumber model
+    districts = Plumber.objects.values_list('district', flat=True).distinct()
+    
+    # Get the selected district from the query parameters
+    selected_district = request.GET.get('district', '')
+    
+    # Filter plumbers based on the selected district
+    if selected_district:
+        plumbers = Plumber.objects.filter(district=selected_district)
     else:
-        messages.warning(request, 'You need to log in first.')
-        return redirect('login')
+        plumbers = Plumber.objects.all()
+    
+    context = {
+        'plumbers': plumbers,
+        'districts': districts,
+        'selected_district': selected_district,
+    }
+    return render(request, 'view_plumbers.html', context)
     
 def view_electricians(request):
-    user_id = request.session.get('user_id')
-
-    if user_id:
-        # Fetch all Electrician objects
-        electricians = Electrician.objects.all()
-        return render(request, 'view_electricians.html', {'electricians': electricians})
+    # Get all unique districts from the Electrician model
+    districts = Electrician.objects.values_list('district', flat=True).distinct()
+    
+    # Get the selected district from the query parameters
+    selected_district = request.GET.get('district', '')
+    
+    # Filter electricians based on the selected district
+    if selected_district:
+        electricians = Electrician.objects.filter(district=selected_district)
     else:
-        messages.warning(request, 'You need to log in first.')
-        return redirect('login')
+        electricians = Electrician.objects.all()
+    
+    context = {
+        'electricians': electricians,
+        'districts': districts,
+        'selected_district': selected_district,
+    }
+    return render(request, 'view_electricians.html', context)
 
 def view_nurses(request):
-    user_id = request.session.get('user_id')
-
-    if user_id:
-        # Fetch all Home_Nurse objects
-        nurses = Home_Nurse.objects.all()
-        return render(request, 'view_nurses.html', {'nurses': nurses})
+    # Get all unique districts from the Nurse model
+    districts = Home_Nurse.objects.values_list('district', flat=True).distinct()
+    
+    # Get the selected district from the query parameters
+    selected_district = request.GET.get('district', '')
+    
+    # Filter nurses based on the selected district
+    if selected_district:
+        nurses = Home_Nurse.objects.filter(district=selected_district)
     else:
-        messages.warning(request, 'You need to log in first.')
-        return redirect('login')
+        nurses = Home_Nurse.objects.all()
+    
+    context = {
+        'nurses': nurses,
+        'districts': districts,
+        'selected_district': selected_district,
+    }
+    return render(request, 'view_nurses.html', context)
 
 def view_carpenters(request):
-    user_id = request.session.get('user_id')
-
-    if user_id:
-        # Fetch all Carpenter objects
-        carpenters = Carpenter.objects.all()
-        return render(request, 'view_carpenters.html', {'carpenters': carpenters})
+    # Get all unique districts from the Carpenter model
+    districts = Carpenter.objects.values_list('district', flat=True).distinct()
+    
+    # Get the selected district from the query parameters
+    selected_district = request.GET.get('district', '')
+    
+    # Filter carpenters based on the selected district
+    if selected_district:
+        carpenters = Carpenter.objects.filter(district=selected_district)
     else:
-        messages.warning(request, 'You need to log in first.')
-        return redirect('login')
+        carpenters = Carpenter.objects.all()
+    
+    context = {
+        'carpenters': carpenters,
+        'districts': districts,
+        'selected_district': selected_district,
+    }
+    return render(request, 'view_carpenters.html', context)
 
 def view_bookings(request):
     user_id = request.session.get('user_id')

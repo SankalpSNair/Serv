@@ -79,6 +79,82 @@
             font-size: 15px;
             color:black;
         }
+        
+        .search-container {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .select-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 50%;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 12px 20px;
+            font-size: 16px;
+            border: 2px solid #9064E9;
+            border-radius: 25px;
+            background-color: white;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-bar:focus {
+            outline: none;
+            border-color: #7040C0;
+            box-shadow: 0 0 0 2px rgba(112, 64, 192, 0.2);
+        }
+
+        .select-wrapper::after {
+            content: '\25BC';
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            pointer-events: none;
+            font-size: 14px;
+            color: #9064E9;
+            transition: all 0.3s ease;
+        }
+
+        .select-wrapper:hover::after {
+            color: #7040C0;
+        }
+
+        .search-button {
+            padding: 12px 25px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #9064E9;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-left: 10px;
+        }
+
+        .search-button:hover {
+            background-color: #7040C0;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .select-wrapper {
+                width: 100%;
+                margin-bottom: 15px;
+            }
+
+            .search-button {
+                width: 100%;
+                margin-left: 0;
+            }
+        }
     </style>
     </head>
     <header class="header-area header-sticky">
@@ -157,6 +233,21 @@
             </div>
         
             <!-- ***** Section Title End ***** -->
+
+            <!-- Add search bar -->
+            <div class="search-container">
+                <form action="" method="get">
+                    <div class="select-wrapper">
+                        <select class="search-bar" name="district">
+                            <option value="Search by district">All District</option>
+                            {% for district in districts %}
+                                <option value="{{ district }}" {% if selected_district == district %}selected{% endif %}>{{ district }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="search-button">Search</button>
+                </form>
+            </div>
 
             <div class="container">
                 <div class="row">

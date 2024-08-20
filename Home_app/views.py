@@ -1512,46 +1512,31 @@ def update_booking_status(request):
         return JsonResponse({'success': False, 'error': 'Booking not found'})
     
 
-
 # ------------------WORKER Views----------------------
 
+@never_cache
 def worker_index(request):
-    return render(request, 'worker_temp/worker_index.html')
-
-def worker_profile(request):
-    user_id = request.session.get('user_id')  # Get user_id from session
+    user_id = request.session.get('user_id')
 
     if request.method == 'POST':
         if user_id:
-            try:
-                user = Users.objects.get(user_id=user_id)
-                
-                # Update user information from the form data
-                user.firstname = request.POST.get('first_name')
-                user.lastname = request.POST.get('last_name')
-                user.email = request.POST.get('email')
-                user.phone = request.POST.get('phone')
-                user.address = request.POST.get('address')
-                user.worker_type = request.POST.get('worker_type')
-                user.experience = request.POST.get('experience')
-                user.skills = request.POST.get('skills')
-                
-                # Handle profile picture update
-                if 'profile_pic' in request.FILES:
-                    user.image = request.FILES['profile_pic']
-                
-                user.save()
-                messages.success(request, 'Profile updated successfully.')
-                return redirect('worker_index')  # Redirect to the worker index page after updating
+            user = Users.objects.get(user_id=user_id)
+            
+            # Update user information from the form data
+            user.firstname = request.POST.get('first_name')
+            user.lastname = request.POST.get('last_name')
+            user.email = request.POST.get('email')
+            user.phone = request.POST.get('phone')
+            user.address = request.POST.get('address')
+            
+            # Handle profile picture update
+            if 'profile_pic' in request.FILES:
+                user.image = request.FILES['profile_pic']
+            
+            user.save()
+            messages.success(request, 'Profile updated successfully.')
+            return redirect('worker_index')
 
-            except Users.DoesNotExist:
-                messages.error(request, 'User not found.')
-                return redirect('login')
-        else:
-            messages.warning(request, 'You need to log in first.')
-            return redirect('login')
-
-    # Handle GET request
     if user_id:
         try:
             user = Users.objects.get(user_id=user_id)
@@ -1560,16 +1545,69 @@ def worker_profile(request):
                 'last_name': user.lastname,
                 'email': user.email,
                 'phone': user.phone,
-                'usertype': user.usertype,
                 'address': user.address,
-                'experience': user.experience,
-                'skills': user.skills,
                 'profile_picture_url': user.image.url if user.image else '/media/default_profile_pic.png',
             }
-            return render(request, 'worker_temp/worker_profile.html', context)
+            return render(request, 'worker_temp/worker_index.html', context)
         except Users.DoesNotExist:
             messages.error(request, 'User not found.')
             return redirect('login')
     else:
         messages.warning(request, 'You need to log in first.')
         return redirect('login')
+
+from django.db import IntegrityError
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.db import IntegrityError
+from .models import Users  # Make sure to import your Users model
+
+@never_cache
+def worker_profile(request):
+    user_id = request.session.get('user_id')
+
+    if not user_id:
+        messages.warning(request, 'You need to log in first.')
+        return redirect('login')
+
+    try:
+        user = Users.objects.get(user_id=user_id)
+    except Users.DoesNotExist:
+        messages.error(request, 'User not found.')
+        return redirect('login')
+
+    if request.method == 'POST':
+        # Update user information from the form data
+        user.firstname = request.POST.get('first_name')
+        user.lastname = request.POST.get('last_name')
+        user.phone = request.POST.get('phone')
+        user.address = request.POST.get('address')
+
+        # Handle profile picture update
+        if 'profile_pic' in request.FILES:
+            user.image = request.FILES['profile_pic']
+
+        try:
+            user.save()
+            messages.success(request, 'Profile updated successfully.')
+        except IntegrityError:
+            messages.error(request, 'An error occurred while saving. Please check all fields.')
+
+        # Redirect to the same page to show the updated information
+        return redirect('worker_profile')
+
+    # Prepare context for both GET and POST (after unsuccessful save) requests
+    context = {
+        'first_name': user.firstname,
+        'last_name': user.lastname,
+        'email': user.email,
+        'phone': user.phone,
+        'usertype': user.usertype,
+        'address': user.address,
+        'profile_picture_url': user.image.url if user.image else '/media/default_profile_pic.png',
+    }
+
+    return render(request, 'worker_temp/worker_profile.html', context)
+    
+

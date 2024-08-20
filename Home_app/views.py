@@ -1557,7 +1557,6 @@ def worker_index(request):
         return redirect('login')
 
 from django.db import IntegrityError
-
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.db import IntegrityError
@@ -1610,4 +1609,30 @@ def worker_profile(request):
 
     return render(request, 'worker_temp/worker_profile.html', context)
     
+from django.db.models import F
+def view_my_booking(request):
+    user_id = request.session.get('user_id')
 
+    if not user_id:
+        messages.warning(request, 'You need to log in first.')
+        return redirect('login')
+
+    try:
+        worker = Users.objects.get(user_id=user_id)
+    except Users.DoesNotExist:
+        messages.error(request, 'User not found.')
+        return redirect('login')
+
+    # Fetch bookings for the logged-in worker with customer details
+    bookings = Booking.objects.filter(worker_id=worker.user_id).select_related('customer_id').annotate(
+        customer_firstname=F('customer_id__firstname'),
+        customer_lastname=F('customer_id__lastname'),
+        customer_email=F('customer_id__email'),
+        customer_phone=F('customer_id__phone')
+    ).order_by('-appointment_date', '-appointment_time')
+
+    context = {
+        'bookings': bookings
+    }
+
+    return render(request, 'worker_temp/view_my_booking.html', context)

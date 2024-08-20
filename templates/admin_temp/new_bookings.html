@@ -185,6 +185,8 @@
                                             <a href="{% url 'change_booking_status' booking.id %}">
                                                 {% if booking.status == 'Pending' %}
                                                     <span class="badge bg-warning">Pending</span>
+                                                {% elif booking.status == 'Paid' %}
+                                                    <span class="badge bg-success">Paid</span>
                                                 {% elif booking.status == 'Confirmed' %}
                                                     <span class="badge bg-primary">Confirmed</span>
                                                 {% elif booking.status == 'Completed' %}

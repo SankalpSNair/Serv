@@ -62,6 +62,8 @@ path('admin/', admin.site.urls),
     path('email-search/', views.emailsearch, name='emailsearch'),
     path('users-email-search/', views.usersemailsearch, name='useremailsearch'),
     path('search-book-status/', views.searchbookstatus, name='searchbookstatus'),
+    path('update_booking_status/', views.update_booking_status, name='update_booking_status'),
+    
 
 ] 
 if settings.DEBUG:

@@ -234,7 +234,7 @@ def change_booking_status(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id)
     
     # Define the status order you want to cycle through
-    status_order = ['Pending', 'Confirmed', 'Completed', 'Cancelled']
+    status_order = ['Pending','Paid', 'Confirmed', 'Completed', 'Cancelled']
     
     # Find the current status index and determine the next status
     current_index = status_order.index(booking.status)
@@ -1469,3 +1469,32 @@ def searchbookstatus(request):
     return render(request, 'admin_temp/new_bookings.html', context)
 
 
+
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
+@csrf_exempt
+@require_POST
+def update_booking_status(request):
+    booking_id = request.POST.get('booking_id')
+    new_status = request.POST.get('status')
+    
+    # Ensure the new_status is valid
+    valid_statuses = ['Pending', 'Paid', 'Confirmed', 'Completed', 'Cancelled']
+    if new_status not in valid_statuses:
+        return JsonResponse({'success': False, 'error': 'Invalid status'})
+    
+    try:
+        booking = Booking.objects.get(id=booking_id)
+        
+        # Prevent cancellation if the booking is already confirmed
+        if booking.status == 'Confirmed' and new_status == 'Cancelled':
+            return JsonResponse({'success': False, 'error': 'Cannot cancel a confirmed booking'})
+        
+        booking.status = new_status
+        booking.save()
+        return JsonResponse({'success': True})
+    except Booking.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Booking not found'})
+    
+    

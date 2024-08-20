@@ -486,9 +486,9 @@ body.modal-open {
                                         {% if booking.status == 'Confirmed' %}
                                             <button class="btn btn-sm btn-info" data-toggle="modal" data-target="#detailsModal{{ booking.id }}">Details</button>
                                         {% endif %}
-                                        {% if booking.status == 'Pending' %}
-                                            <a href="#" class="btn btn-sm btn-success">Make Payment</a>
-                                            <a href="#" class="btn btn-sm btn-danger">Cancel</a>
+                                        {% if booking.status == 'Pending' or booking.status == 'Paid' %}
+                                            <button class="btn btn-sm btn-success make-payment-btn" data-booking-id="{{ booking.id }}">Make Payment</button>
+                                            <button class="btn btn-sm btn-danger cancel-booking-btn" data-booking-id="{{ booking.id }}">Cancel</button>
                                         {% endif %}
                                     </td>
                                 </tr>
@@ -620,6 +620,78 @@ body.modal-open {
             if ($(e.target).hasClass('modal')) {
                 hideModal($(this).attr('id'));
             }
+        });
+
+        // Attach click event to make payment buttons
+        $('.make-payment-btn').on('click', function(e) {
+            e.preventDefault();
+            var bookingId = $(this).data('booking-id');
+            var $button = $(this);
+
+            // Disable the button and change text
+            $button.prop('disabled', true).text('Processing...');
+
+            // Simulate payment process
+            setTimeout(function() {
+                // Simulating an AJAX call to update the booking status
+                $.ajax({
+                    url: '{% url "update_booking_status" %}',
+                    method: 'POST',
+                    data: {
+                        booking_id: bookingId,
+                        status: 'Paid'
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            alert('Payment successful! Booking status updated to Paid.');
+                            location.reload(); // Reload the page to reflect the changes
+                        } else {
+                            alert('Error updating booking status. Please try again.');
+                            $button.prop('disabled', false).text('Make Payment');
+                        }
+                    },
+                    error: function() {
+                        alert('Error processing payment. Please try again.');
+                        $button.prop('disabled', false).text('Make Payment');
+                    }
+                });
+            }, 2000); // Simulate 2 seconds of processing time
+        });
+
+        // Attach click event to cancel buttons
+        $('.cancel-booking-btn').on('click', function(e) {
+            e.preventDefault();
+            var bookingId = $(this).data('booking-id');
+            var $button = $(this);
+
+            // Disable the button and change text
+            $button.prop('disabled', true).text('Cancelling...');
+
+            // Simulate cancellation process
+            setTimeout(function() {
+                // Simulating an AJAX call to update the booking status
+                $.ajax({
+                    url: '{% url "update_booking_status" %}',
+                    method: 'POST',
+                    data: {
+                        booking_id: bookingId,
+                        status: 'Cancelled'
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            alert('Booking cancelled successfully.');
+                            location.reload(); // Reload the page to reflect the changes
+                        } else {
+                            alert('Error cancelling booking. Please try again.');
+                            $button.prop('disabled', false).text('Cancel');
+                        }
+                    },
+                    error: function() {
+                        alert('Error cancelling booking. Please try again.');
+                        $button.prop('disabled', false).text('Cancel');
+                    }
+                });
+            }, 2000); // Simulate 2 seconds of processing time
         });
     });
 </script>

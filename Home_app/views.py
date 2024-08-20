@@ -932,7 +932,7 @@ def customer_profile(request):
         return redirect('login')
 
    
-
+@never_cache
 def update_profile(request):
     user_id = request.session.get('user_id')
     
@@ -1036,7 +1036,7 @@ def custom_password_reset_confirm(request, uidb64, token):
 def custom_password_reset_done(request):
     return render(request, 'registration/password_reset_done.html')
 
-
+@never_cache
 def view_maids(request):
     # Get all unique districts from the Maid model
     districts = House_Maid.objects.values_list('district', flat=True).distinct()
@@ -1057,6 +1057,7 @@ def view_maids(request):
     }
     return render(request, 'view_maids.html', context)
 
+@never_cache
 def view_plumbers(request):
     # Get all unique districts from the Plumber model
     districts = Plumber.objects.values_list('district', flat=True).distinct()
@@ -1077,6 +1078,7 @@ def view_plumbers(request):
     }
     return render(request, 'view_plumbers.html', context)
     
+@never_cache
 def view_electricians(request):
     # Get all unique districts from the Electrician model
     districts = Electrician.objects.values_list('district', flat=True).distinct()
@@ -1097,6 +1099,7 @@ def view_electricians(request):
     }
     return render(request, 'view_electricians.html', context)
 
+@never_cache
 def view_nurses(request):
     # Get all unique districts from the Nurse model
     districts = Home_Nurse.objects.values_list('district', flat=True).distinct()
@@ -1117,6 +1120,7 @@ def view_nurses(request):
     }
     return render(request, 'view_nurses.html', context)
 
+@never_cache
 def view_carpenters(request):
     # Get all unique districts from the Carpenter model
     districts = Carpenter.objects.values_list('district', flat=True).distinct()
@@ -1137,6 +1141,7 @@ def view_carpenters(request):
     }
     return render(request, 'view_carpenters.html', context)
 
+@never_cache
 def view_bookings(request):
     user_id = request.session.get('user_id')
 
@@ -1152,6 +1157,7 @@ def view_bookings(request):
     }
     return render(request, 'view_booking.html', context)
 
+@never_cache
 def view_services(request):
     user_id = request.session.get('user_id')
     
@@ -1174,6 +1180,7 @@ def view_services(request):
         messages.warning(request, 'You need to log in first.')
         return redirect('login')
 
+@never_cache
 def book_service(request, maid_id):
     user_id = request.session.get('user_id')
     
@@ -1220,7 +1227,7 @@ def book_service(request, maid_id):
     return render(request, 'registration/book_service.html', context)
 
 
-
+@never_cache
 def book_home_nurse(request, nurse_id):
     user_id = request.session.get('user_id')
     
@@ -1266,6 +1273,7 @@ def book_home_nurse(request, nurse_id):
     }
     return render(request, 'registration/book_nurse.html', context)
 
+@never_cache
 def book_carpenter(request, carpenter_id):
     user_id = request.session.get('user_id')
     
@@ -1315,6 +1323,7 @@ def book_carpenter(request, carpenter_id):
     }
     return render(request, 'registration/book_carpenter.html', context)
 
+@never_cache
 def book_plumber(request, plumber_id):
     user_id = request.session.get('user_id')
     
@@ -1360,6 +1369,7 @@ def book_plumber(request, plumber_id):
     }
     return render(request, 'registration/book_plumber.html', context)
 
+@never_cache
 def book_electrician(request, electrician_id):
     user_id = request.session.get('user_id')
     
@@ -1405,6 +1415,7 @@ def book_electrician(request, electrician_id):
     }
     return render(request, 'registration/book_electrician.html', context)
 
+@never_cache
 def emailsearch(request):
 
     # Get the search query from the GET request
@@ -1422,6 +1433,7 @@ def emailsearch(request):
     }
     return render(request, 'admin_temp/full_workers.html', context)
 
+@never_cache
 def usersemailsearch(request):
 
     # Get the search query from the GET request
@@ -1439,6 +1451,7 @@ def usersemailsearch(request):
     }
     return render(request, 'admin_temp/full_customers.html', context)
 
+@never_cache
 def searchbookstatus(request):
     # Get the status query from the GET request
     status_query = request.GET.get('status', '')

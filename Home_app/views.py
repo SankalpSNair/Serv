@@ -22,6 +22,9 @@ from django.contrib import messages
 from .models import Plumber, Users, Skill
 from django.core.files.storage import default_storage
 from django.contrib import messages
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
 
 
 
@@ -865,6 +868,21 @@ def LoginPage(request):
                 messages.error(request, 'Invalid Credentials')
                 print("User login failed: User does not exist")
 
+    # Add this new block for worker login
+        # Worker login check
+    if request.method == 'POST':
+        try:
+            user = Users.objects.get(email=email)
+            if user.password == password and user.usertype != 'customer':
+                # Worker credentials
+                request.session['user_id'] = user.user_id
+                request.session['user_email'] = user.email
+                messages.success(request, 'Worker login successful')
+                print(f"Worker login successful: User ID={request.session.get('user_id')}")
+                return redirect('worker_index')  # Redirect to the worker index page
+        except Users.DoesNotExist:
+            pass  # We've already handled this exception above
+
     return render(request, 'login.html')
 
 
@@ -1469,10 +1487,6 @@ def searchbookstatus(request):
     return render(request, 'admin_temp/new_bookings.html', context)
 
 
-
-from django.http import JsonResponse
-from django.views.decorators.http import require_POST
-from django.views.decorators.csrf import csrf_exempt
 @csrf_exempt
 @require_POST
 def update_booking_status(request):
@@ -1497,4 +1511,65 @@ def update_booking_status(request):
     except Booking.DoesNotExist:
         return JsonResponse({'success': False, 'error': 'Booking not found'})
     
-    
+
+
+# ------------------WORKER Views----------------------
+
+def worker_index(request):
+    return render(request, 'worker_temp/worker_index.html')
+
+def worker_profile(request):
+    user_id = request.session.get('user_id')  # Get user_id from session
+
+    if request.method == 'POST':
+        if user_id:
+            try:
+                user = Users.objects.get(user_id=user_id)
+                
+                # Update user information from the form data
+                user.firstname = request.POST.get('first_name')
+                user.lastname = request.POST.get('last_name')
+                user.email = request.POST.get('email')
+                user.phone = request.POST.get('phone')
+                user.address = request.POST.get('address')
+                user.worker_type = request.POST.get('worker_type')
+                user.experience = request.POST.get('experience')
+                user.skills = request.POST.get('skills')
+                
+                # Handle profile picture update
+                if 'profile_pic' in request.FILES:
+                    user.image = request.FILES['profile_pic']
+                
+                user.save()
+                messages.success(request, 'Profile updated successfully.')
+                return redirect('worker_index')  # Redirect to the worker index page after updating
+
+            except Users.DoesNotExist:
+                messages.error(request, 'User not found.')
+                return redirect('login')
+        else:
+            messages.warning(request, 'You need to log in first.')
+            return redirect('login')
+
+    # Handle GET request
+    if user_id:
+        try:
+            user = Users.objects.get(user_id=user_id)
+            context = {
+                'first_name': user.firstname,
+                'last_name': user.lastname,
+                'email': user.email,
+                'phone': user.phone,
+                'usertype': user.usertype,
+                'address': user.address,
+                'experience': user.experience,
+                'skills': user.skills,
+                'profile_picture_url': user.image.url if user.image else '/media/default_profile_pic.png',
+            }
+            return render(request, 'worker_temp/worker_profile.html', context)
+        except Users.DoesNotExist:
+            messages.error(request, 'User not found.')
+            return redirect('login')
+    else:
+        messages.warning(request, 'You need to log in first.')
+        return redirect('login')

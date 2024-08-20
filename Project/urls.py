@@ -5,7 +5,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls),
     path('', views.SignupPage, name='signup'),
     path('login/', views.LoginPage, name='login'),
     path('index/', views.HomePage, name='home'),
@@ -42,9 +42,10 @@ path('admin/', admin.site.urls),
     path('add_home_nurse/', views.add_home_nurse, name='add_home_nurse'),
     path('add_house_maid/', views.add_house_maid, name='add_house_maid'),
 
-    
-
 # admin side end
+
+#customer side start  
+
     path('update_profile/', views.update_profile, name='update_profile'),
     path('view_maids/', views.view_maids, name='view_maids'),
     path('view_plumbers/', views.view_plumbers, name='view_plumbers'),
@@ -63,7 +64,14 @@ path('admin/', admin.site.urls),
     path('users-email-search/', views.usersemailsearch, name='useremailsearch'),
     path('search-book-status/', views.searchbookstatus, name='searchbookstatus'),
     path('update_booking_status/', views.update_booking_status, name='update_booking_status'),
-    
+
+#customer side end
+
+#worker side start
+
+    path('worker_index/', views.worker_index, name='worker_index'),
+    path('worker/profile/', views.worker_profile, name='worker_profile'),
+#worker side end
 
 ] 
 if settings.DEBUG:

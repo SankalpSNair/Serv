@@ -177,3 +177,5 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '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'
 # settings.py
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Use database-backed sessions
 SESSION_COOKIE_SECURE = False  # Set to True for HTTPS
+
+

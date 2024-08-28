@@ -15,7 +15,6 @@ urlpatterns = [
     path('custom_password_reset_confirm/<uidb64>/<token>/', views.custom_password_reset_confirm, name='custom_password_reset_confirm'),
     path('social-auth/', include('social_django.urls', namespace='social')),
 
-
 # admin side start
 
     path('dashboard/', views.DashboardPage, name='dashboard'),
@@ -64,7 +63,7 @@ urlpatterns = [
     path('users-email-search/', views.usersemailsearch, name='useremailsearch'),
     path('search-book-status/', views.searchbookstatus, name='searchbookstatus'),
     path('update_booking_status/', views.update_booking_status, name='update_booking_status'),
-
+    
 #customer side end
 
 #worker side start

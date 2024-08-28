@@ -25,3 +25,5 @@ PS C:\Users\Aquarius\Desktop\Project\git_log\ServEase> git log --pretty=format:"
 PS C:\Users\Aquarius\Desktop\Project\git_log\ServEase> 
 
 
+key_id= rzp_test_C15G4r2wYCMSfs
+secret= hkXjLXzmwDe7EjP2ysSeU15N

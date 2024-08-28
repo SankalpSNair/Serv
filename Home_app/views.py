@@ -14,7 +14,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.urls import reverse
 from .forms import CustomPasswordResetForm
 from django.contrib.auth.forms import SetPasswordForm
-from .models import Users,House_Maid,Skill,Carpenter,Electrician,Plumber,Home_Nurse,Booking
+from .models import Users,House_Maid,Skill,Carpenter,Electrician,Plumber,Home_Nurse,Booking,ServiceRate
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.hashers import check_password
 from django.shortcuts import render, redirect
@@ -1198,6 +1198,7 @@ def view_services(request):
         messages.warning(request, 'You need to log in first.')
         return redirect('login')
 
+from decimal import Decimal
 @never_cache
 def book_service(request, maid_id):
     user_id = request.session.get('user_id')
@@ -1214,6 +1215,7 @@ def book_service(request, maid_id):
         appointment_date = request.POST.get('appointment_date')
         appointment_time = request.POST.get('appointment_time')
         address = request.POST.get('address')
+        hours_booked = Decimal(request.POST.get('hours_booked', 1))
         
         # Fetch the customer (logged-in user) or return an error if not found
         try:
@@ -1227,9 +1229,13 @@ def book_service(request, maid_id):
                 appointment_date=appointment_date,
                 appointment_time=appointment_time,
                 address=address,
-                status='Pending'  # Default status
+                status='Pending',  # Default status
+                service_type='house_maid',
+                hours_booked=hours_booked,
             )
             booking.save()
+            
+            booking.calculate_pay_amount()
             
             messages.success(request, 'Booking successfully created!')
             return redirect('view_bookings')
@@ -1238,9 +1244,10 @@ def book_service(request, maid_id):
             messages.error(request, 'User not found.')
             return redirect('view_maids')
     
-    # Provide the maid object to the template for displaying details
+    # Provide the maid object and hourly rate to the template for displaying details
     context = {
-        'maid': maid
+        'maid': maid,
+        'hourly_rate': ServiceRate.objects.get(service_type='house_maid').hourly_rate,
     }
     return render(request, 'registration/book_service.html', context)
 
@@ -1636,3 +1643,4 @@ def view_my_booking(request):
     }
 
     return render(request, 'worker_temp/view_my_booking.html', context)
+

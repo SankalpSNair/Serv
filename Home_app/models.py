@@ -1,5 +1,7 @@
 from django.db import models
 from django.conf import settings
+from django.contrib.auth.models import User
+
 # Create your models here.
 
 class Users(models.Model):
@@ -112,7 +114,7 @@ class Booking(models.Model):
     ])
     
     # Foreign key to the Users table for the customer
-    customer_id= models.ForeignKey('Users', on_delete=models.CASCADE, related_name='customer_bookings')
+    customer_id = models.ForeignKey('Users', on_delete=models.CASCADE, related_name='customer_bookings')
     
     # Date and time of the appointment
     appointment_date = models.DateField()
@@ -130,9 +132,21 @@ class Booking(models.Model):
         ('Cancelled', 'Cancelled'),
     ], default='Pending')
     
-    # New fields for service type and description
+    # Fields for service type and description
     service_type = models.CharField(max_length=100, blank=True)
     description = models.TextField(blank=True)
+    
+    # Additional fields from the first definition
+    pay_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    hours_booked = models.PositiveIntegerField(default=1)
+
+    def calculate_pay_amount(self):
+        service_rate = ServiceRate.objects.get(service_type=self.service_type)
+        self.pay_amount = service_rate.hourly_rate * self.hours_booked
+        self.save()
+
+    class Meta:
+        app_label = 'Home_app'
 
 class ServiceRate(models.Model):
     SERVICE_TYPES = [
@@ -149,48 +163,14 @@ class ServiceRate(models.Model):
     def __str__(self):
         return f"{self.get_service_type_display()} - ${self.hourly_rate}/hour"
 
-class Booking(models.Model):
-    # Foreign key to the Users table for the worker
-    worker_id = models.ForeignKey('Users', on_delete=models.CASCADE, related_name='bookings')
-    
-    # Field to identify the type of worker
-    worker_type = models.CharField(max_length=50, choices=[
-        ('House Maid', 'House Maid'),
-        ('Carpenter', 'Carpenter'),
-        ('Plumber', 'Plumber'),
-        ('Electrician', 'Electrician'),
-        ('Home Nurse', 'Home Nurse'),
-    ])
-    
-    # Foreign key to the Users table for the customer
-    customer_id= models.ForeignKey('Users', on_delete=models.CASCADE, related_name='customer_bookings')
-    
-    # Date and time of the appointment
-    appointment_date = models.DateField()
-    appointment_time = models.TimeField()
-    
-    # Address where the service will be provided
-    address = models.TextField()
-    
-    # Status of the booking
-    status = models.CharField(max_length=20, choices=[
-        ('Pending', 'Pending'),
-        ('Paid', 'Paid'),
-        ('Confirmed', 'Confirmed'),
-        ('Completed', 'Completed'),
-        ('Cancelled', 'Cancelled'),
-    ], default='Pending')
-    
-    # New fields for service type and description
-    service_type = models.CharField(max_length=100, blank=True)
-    description = models.TextField(blank=True)
-    pay_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    hours_booked = models.PositiveIntegerField(default=1)
 
-    def calculate_pay_amount(self):
-        service_rate = ServiceRate.objects.get(service_type=self.service_type)
-        self.pay_amount = service_rate.hourly_rate * self.hours_booked
-        self.save()
 
+class ChatMessage(models.Model):
+    sender = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='sent_messages')
+    message = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.sender.firstname}: {self.message[:50]}"
 
 

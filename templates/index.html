@@ -368,6 +368,17 @@
             left: 50%;
             transform: translate(-50%, -50%);
         }
+
+        .refresh-chat-btn {
+            background-color: transparent;
+            border: none;
+            color: #435ebe;
+            transition: transform 0.3s ease;
+        }
+
+        .refresh-chat-btn:hover {
+            transform: rotate(180deg);
+        }
     </style>
     </head>
     
@@ -379,7 +390,7 @@
             <div></div>
             <div></div>
             <div></div>
-        </div>
+        </div>  
     </div>  
     <!-- ***** Preloader End ***** -->
     
@@ -628,16 +639,26 @@
             const closeChat = document.getElementById('closeChat');
             const chatContent = document.getElementById('chatContent');
             const messageInput = document.getElementById('messageInput');
+            const refreshButton = document.createElement('button');
+
+            // Add refresh button
+            refreshButton.innerHTML = '<i class="bi bi-arrow-clockwise"></i>';
+            refreshButton.className = 'btn btn-sm refresh-chat-btn';
+            refreshButton.style.marginLeft = '10px';
+            document.querySelector('.card-header .media').appendChild(refreshButton);
 
             chatIcon.addEventListener('click', () => {
                 chatWrapper.style.display = 'block';
                 chatIcon.style.display = 'none';
+                loadMessages();
             });
 
             closeChat.addEventListener('click', () => {
                 chatWrapper.style.display = 'none';
                 chatIcon.style.display = 'block';
             });
+
+            refreshButton.addEventListener('click', loadMessages);
 
             function addMessage(message, isUser = true) {
                 const messageDiv = document.createElement('div');
@@ -651,16 +672,66 @@
                 chatContent.scrollTop = chatContent.scrollHeight;
             }
 
+            function loadMessages() {
+                fetch('/get_messages/')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            chatContent.innerHTML = '';
+                            data.messages.forEach(msg => {
+                                addMessage(msg.message, msg.sender === '{{first_name}}');
+                            });
+                        } else {
+                            console.error('Error loading messages:', data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            }
+
             messageInput.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter' && this.value.trim() !== '') {
-                    addMessage(this.value);
-                    // Simulate admin response
-                    setTimeout(() => {
-                        addMessage("Thank you for your message. How can I assist you further?", false);
-                    }, 1000);
-                    this.value = '';
+                    const message = this.value.trim();
+                    fetch('/send_message/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'X-CSRFToken': getCookie('csrftoken')
+                        },
+                        body: `message=${encodeURIComponent(message)}`
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            addMessage(message, true);
+                            this.value = '';
+                        } else {
+                            console.error('Error sending message:', data.message);
+                            alert('Error sending message: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while sending the message.');
+                    });
                 }
             });
+
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
         });
     </script>
 

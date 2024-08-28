@@ -351,37 +351,25 @@
                                 <h4>Recent Messages</h4>
                             </div>
                             <div class="card-content pb-4">
+                                {% for message in recent_messages %}
                                 <div class="recent-message d-flex px-4 py-3">
                                     <div class="avatar avatar-lg">
-                                        <img src="{% static 'adm_assets/images/faces/4.jpg' %}">
+                                        <img src="{{ message.sender.image.url }}" alt="{{ message.sender.firstname }}">
                                     </div>
                                     <div class="name ms-4">
-                                        <h5 class="mb-1">Hank Schrader</h5>
-                                        <h6 class="text-muted mb-0">@johnducky</h6>
+                                        <h5 class="mb-1">{{ message.sender.firstname }} {{ message.sender.lastname }}</h5>
+                                        <h6 class="text-muted mb-0">{{ message.message|truncatechars:50 }}</h6>
+                                        <small class="text-muted">{{ message.timestamp|date:"F d, Y H:i" }}</small>
                                     </div>
                                 </div>
-                                <div class="recent-message d-flex px-4 py-3">
-                                    <div class="avatar avatar-lg">
-                                        <img src="{% static 'adm_assets/images/faces/5.jpg' %}">
-                                    </div>
-                                    <div class="name ms-4">
-                                        <h5 class="mb-1">Dean Winchester</h5>
-                                        <h6 class="text-muted mb-0">@imdean</h6>
-                                    </div>
+                                {% empty %}
+                                <div class="px-4 py-3">
+                                    <p>No recent messages.</p>
                                 </div>
-                                <div class="recent-message d-flex px-4 py-3">
-                                    <div class="avatar avatar-lg">
-                                        <img src="{% static 'adm_assets/images/faces/1.jpg' %}">
-                                    </div>
-                                    <div class="name ms-4">
-                                        <h5 class="mb-1">John Dodol</h5>
-                                        <h6 class="text-muted mb-0">@dodoljohn</h6>
-                                    </div>
-                                </div>
+                                {% endfor %}
                                 <div class="px-4">
-                                    <button class='btn btn-block btn-xl btn-light-primary font-bold mt-3'>Start Conversation</button>
+                                    <a href="{% url 'admin_new_chat' %}" class='btn btn-block btn-xl btn-light-primary font-bold mt-3'>Start Conversation</a>
                                 </div>
-                            </div>
                         </div>
                         <div class="card">
                             <div class="card-header">

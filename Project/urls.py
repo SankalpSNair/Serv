@@ -40,7 +40,8 @@ urlpatterns = [
     path('add_electrician/', views.add_electrician, name='add_electrician'),
     path('add_home_nurse/', views.add_home_nurse, name='add_home_nurse'),
     path('add_house_maid/', views.add_house_maid, name='add_house_maid'),
-
+    path('new_chat/', views.admin_new_chat, name='admin_new_chat'),
+    
 # admin side end
 
 #customer side start  
@@ -63,6 +64,9 @@ urlpatterns = [
     path('users-email-search/', views.usersemailsearch, name='useremailsearch'),
     path('search-book-status/', views.searchbookstatus, name='searchbookstatus'),
     path('update_booking_status/', views.update_booking_status, name='update_booking_status'),
+
+    path('send_message/', views.send_message, name='send_message'),
+    path('get_messages/', views.get_messages, name='get_messages'),
     
 #customer side end
 

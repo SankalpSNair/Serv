@@ -14,7 +14,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.urls import reverse
 from .forms import CustomPasswordResetForm
 from django.contrib.auth.forms import SetPasswordForm
-from .models import Users,House_Maid,Skill,Carpenter,Electrician,Plumber,Home_Nurse,Booking,ServiceRate
+from .models import Users,House_Maid,Skill,Carpenter,Electrician,Plumber,Home_Nurse,Booking,ServiceRate,ChatMessage
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.hashers import check_password
 from django.shortcuts import render, redirect
@@ -25,6 +25,8 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Max
+from .import models
 
 
 
@@ -36,11 +38,23 @@ def DashboardPage(request):
     total_workers = Users.objects.exclude(usertype='customer').count()  # Total number of workers
     total_bookings = Booking.objects.count()  # Total number of bookings
     
+    # Get the most recent message from each unique sender
+    recent_messages = ChatMessage.objects.values('sender').annotate(
+        max_timestamp=Max('timestamp')
+    ).order_by('-max_timestamp')[:5]
+
+    # Fetch the actual message objects
+    recent_messages = [
+        ChatMessage.objects.filter(sender=item['sender'], timestamp=item['max_timestamp']).first()
+        for item in recent_messages
+    ]
+
     context = {
         'total_users': total_users,
         'total_customers': total_customers,
         'total_workers': total_workers,
-        'total_bookings': total_bookings
+        'total_bookings': total_bookings,
+        'recent_messages': recent_messages
     }
     
     return render(request, 'admin_temp/dashboard.html', context)
@@ -1616,6 +1630,7 @@ def worker_profile(request):
 
     return render(request, 'worker_temp/worker_profile.html', context)
     
+    
 from django.db.models import F
 def view_my_booking(request):
     user_id = request.session.get('user_id')
@@ -1643,4 +1658,61 @@ def view_my_booking(request):
     }
 
     return render(request, 'worker_temp/view_my_booking.html', context)
+
+
+
+import logging
+logger = logging.getLogger(__name__)
+@never_cache
+@csrf_exempt
+def send_message(request):
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return JsonResponse({'status': 'error', 'message': 'User not logged in'})
+
+    if request.method == 'POST':
+        message = request.POST.get('message')
+        
+        if not message:
+            return JsonResponse({'status': 'error', 'message': 'No message provided'})
+        
+        try:
+            sender = get_object_or_404(Users, user_id=user_id)
+            chat_message = ChatMessage.objects.create(
+                sender=sender,
+                message=message
+            )
+            logger.info(f"Message saved: {chat_message}")
+            return JsonResponse({'status': 'success', 'message': message})
+        except Exception as e:
+            logger.error(f"Error saving message: {str(e)}")
+            return JsonResponse({'status': 'error', 'message': str(e)})
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
+@never_cache
+def get_messages(request):
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return JsonResponse({'status': 'error', 'message': 'User not logged in'})
+
+    try:
+        messages = ChatMessage.objects.all().order_by('timestamp')
+        message_list = [{'sender': msg.sender.firstname, 'message': msg.message} for msg in messages]
+        return JsonResponse({'status': 'success', 'messages': message_list})
+    except Exception as e:
+        logger.error(f"Error retrieving messages: {str(e)}")
+        return JsonResponse({'status': 'error', 'message': str(e)})
+
+
+
+def admin_new_chat(request):
+    # Fetch recent messages, ordered by timestamp (newest first)
+    messages = ChatMessage.objects.select_related('sender').order_by('-timestamp')[:20]
+    
+    context = {
+        'messages': messages,
+    }
+    return render(request, 'admin_temp/new_chat.html', context)
+
 

@@ -839,6 +839,8 @@ def SignupPage(request):
     return render(request, 'signup.html')
 
 
+from django.utils import timezone
+
 def LoginPage(request):
     if request.method == 'POST':
         email = request.POST.get('username')
@@ -872,6 +874,12 @@ def LoginPage(request):
                     # Regular user credentials
                     request.session['user_id'] = user.user_id
                     request.session['user_email'] = user.email
+                    
+                    # Update active status and last login
+                    user.active = True
+                    user.last_login = timezone.now()
+                    user.save()
+                    
                     messages.success(request, 'Login successful')
                     print(f"User login successful: User ID={request.session.get('user_id')}")
                     return redirect('home')
@@ -902,6 +910,15 @@ def LoginPage(request):
 
 
 def LogoutPage(request):
+    user_id = request.session.get('user_id')
+    if user_id:
+        try:
+            user = Users.objects.get(user_id=user_id)
+            user.active = False
+            user.save()
+        except Users.DoesNotExist:
+            pass  # If user not found, continue with logout process
+    
     logouts(request)
     request.session.flush()
     messages.success(request, 'You have been logged out successfully.')
@@ -1705,14 +1722,59 @@ def get_messages(request):
         return JsonResponse({'status': 'error', 'message': str(e)})
 
 
-
+from django.db.models import Max, OuterRef, Subquery
 def admin_new_chat(request):
-    # Fetch recent messages, ordered by timestamp (newest first)
-    messages = ChatMessage.objects.select_related('sender').order_by('-timestamp')[:20]
+    # Subquery to get the latest message ID for each sender
+    latest_messages = ChatMessage.objects.filter(
+        sender=OuterRef('sender')
+    ).order_by('-timestamp').values('id')[:1]
+
+    # Fetch the most recent message from each unique sender
+    messages = ChatMessage.objects.filter(
+        id=Subquery(latest_messages)
+    ).select_related('sender').order_by('-timestamp')[:20]
     
     context = {
         'messages': messages,
     }
     return render(request, 'admin_temp/new_chat.html', context)
+
+
+from django.shortcuts import render, get_object_or_404
+from .models import ChatMessage, Users
+
+def admin_view_chat(request, user_id):
+    print(f"Debugging: user_id received = {user_id}")
+
+    try:
+        user = get_object_or_404(Users, user_id=user_id)
+        print(f"Debugging: User found - ID: {user.user_id}, Active: {user.active}")
+
+        # Fetch all messages sent by this user
+        chat_messages = ChatMessage.objects.filter(sender=user).order_by('timestamp')
+        print(f"Debugging: Number of messages found: {chat_messages.count()}")
+
+    except Exception as e:
+        print(f"Debugging: Exception occurred - {str(e)}")
+        return HttpResponse(f"An error occurred: {str(e)}")
+    
+    context = {
+        'user': user,
+        'chat_messages': chat_messages,
+    }
+    return render(request, 'admin_temp/view_chat.html', context)
+
+
+from django.views.decorators.http import require_GET
+@require_GET
+def check_user_status(request):
+    user_id = request.GET.get('user_id')
+    try:
+        user = Users.objects.get(user_id=user_id)
+        return JsonResponse({'active': user.active})
+    except Users.DoesNotExist:
+        return JsonResponse({'active': False})
+
+
 
 

@@ -17,6 +17,7 @@ class Users(models.Model):
     image = models.ImageField(upload_to='profile_pic', null=True, blank=True)
     password = models.CharField(max_length=256)
     usertype = models.CharField(max_length=20)
+    active = models.BooleanField(default=True)
 
 class Skill(models.Model):
     skill_id = models.AutoField(primary_key=True)

@@ -41,7 +41,8 @@ urlpatterns = [
     path('add_home_nurse/', views.add_home_nurse, name='add_home_nurse'),
     path('add_house_maid/', views.add_house_maid, name='add_house_maid'),
     path('new_chat/', views.admin_new_chat, name='admin_new_chat'),
-    
+    path('view-chat/<int:user_id>/', views.admin_view_chat, name='admin_view_chat'),
+    path('check_user_status/', views.check_user_status, name='check_user_status'),
 # admin side end
 
 #customer side start  

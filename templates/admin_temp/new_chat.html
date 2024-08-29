@@ -163,7 +163,7 @@
                                                     <p class="mb-0">{{ message.timestamp|date:"F d, Y H:i" }}</p>
                                                 </td>
                                                 <td class="col-auto">
-                                                    <a href="#" class="btn btn-primary btn-sm">View Chat</a>
+                                                    <a href="{% url 'admin_view_chat' message.sender.user_id %}" class="btn btn-primary btn-sm">View Chat</a>
                                                 </td>
                                             </tr>
                                             {% empty %}

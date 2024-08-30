@@ -43,6 +43,7 @@ urlpatterns = [
     path('new_chat/', views.admin_new_chat, name='admin_new_chat'),
     path('view-chat/<int:user_id>/', views.admin_view_chat, name='admin_view_chat'),
     path('check_user_status/', views.check_user_status, name='check_user_status'),
+    path('adm_send_message/<int:user_id>/', views.adm_send_message, name='adm_send_message'),
 # admin side end
 
 #customer side start  

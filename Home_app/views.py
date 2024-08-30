@@ -1695,8 +1695,16 @@ def send_message(request):
         
         try:
             sender = get_object_or_404(Users, user_id=user_id)
+            
+            # Get the admin user (assuming there's only one admin)
+            admin_receiver = Users.objects.filter(usertype='admin').first()
+            
+            if not admin_receiver:
+                return JsonResponse({'status': 'error', 'message': 'Admin user not found'})
+
             chat_message = ChatMessage.objects.create(
                 sender=sender,
+                receiver=admin_receiver,  # Set the admin as the default receiver
                 message=message
             )
             logger.info(f"Message saved: {chat_message}")
@@ -1741,6 +1749,7 @@ def admin_new_chat(request):
 
 
 from django.shortcuts import render, get_object_or_404
+from django.db.models import Q
 from .models import ChatMessage, Users
 
 def admin_view_chat(request, user_id):
@@ -1750,8 +1759,17 @@ def admin_view_chat(request, user_id):
         user = get_object_or_404(Users, user_id=user_id)
         print(f"Debugging: User found - ID: {user.user_id}, Active: {user.active}")
 
-        # Fetch all messages sent by this user
-        chat_messages = ChatMessage.objects.filter(sender=user).order_by('timestamp')
+        # Get the admin user (assuming there's only one admin)
+        admin_user = Users.objects.filter(usertype='admin').first()
+
+        if not admin_user:
+            return HttpResponse("Admin user not found")
+
+        # Fetch all messages between this user and the admin
+        chat_messages = ChatMessage.objects.filter(
+            Q(sender=user, receiver=admin_user) | Q(sender=admin_user, receiver=user)
+        ).order_by('timestamp')
+        
         print(f"Debugging: Number of messages found: {chat_messages.count()}")
 
     except Exception as e:
@@ -1761,9 +1779,32 @@ def admin_view_chat(request, user_id):
     context = {
         'user': user,
         'chat_messages': chat_messages,
+        'admin_user': admin_user,
     }
     return render(request, 'admin_temp/view_chat.html', context)
 
+def adm_send_message(request, user_id):
+    if request.method == 'POST':
+        recipient = get_object_or_404(Users, user_id=user_id)
+        message = request.POST.get('message')
+        
+        if message:
+            # Get the admin user (assuming there's only one admin)
+            admin_sender = Users.objects.filter(usertype='admin').first()
+            
+            if admin_sender:
+                ChatMessage.objects.create(
+                    sender=admin_sender,
+                    receiver=recipient,
+                    message=message
+                )
+            else:
+                # Handle the case where no admin user is found
+                return JsonResponse({'status': 'error', 'message': 'Admin user not found'})
+        
+        return redirect('admin_view_chat', user_id=user_id)
+    
+    return redirect('admin_view_chat', user_id=user_id)
 
 from django.views.decorators.http import require_GET
 @require_GET

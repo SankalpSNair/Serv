@@ -152,11 +152,11 @@
                                 <div class="card-body pt-4 bg-grey">
                                     <div class="chat-content">
                                         {% for message in chat_messages %}
-                                            <div class="chat {% if message.sender == request.user %}{% else %}chat-left{% endif %}">
+                                            <div class="chat {% if message.sender == admin_user %}chat-right{% else %}chat-left{% endif %}">
                                                 <div class="chat-body">
                                                     <div class="chat-message">
                                                         <div class="message-content">
-                                                            <strong>{{ message.sender.firstname }}:</strong> {{ message.message }}
+                                                            <strong>{% if message.sender == admin_user %}You{% else %}{{ message.sender.firstname }}{% endif %}:</strong> {{ message.message }}
                                                         </div>
                                                         <div class="message-timestamp">
                                                             <small>{{ message.timestamp|date:"F d, Y H:i" }}</small>
@@ -165,12 +165,12 @@
                                                 </div>
                                             </div>
                                         {% empty %}
-                                            <p>No messages from this user yet.</p>
+                                            <p>No messages in this conversation yet.</p>
                                         {% endfor %}
                                     </div>
                                 </div>
                                 <div class="card-footer">
-                                    <form method="post" action="#">
+                                    <form method="post" action="{% url 'adm_send_message' user.user_id %}">
                                         {% csrf_token %}
                                         <div class="message-form d-flex flex-direction-column align-items-center">
                                             <a href="#" class="black"><i data-feather="smile"></i></a>

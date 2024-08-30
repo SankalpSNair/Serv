@@ -302,18 +302,28 @@
             background-color: #f2f7ff;
         }
 
+        .chat {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        .chat-right {
+            justify-content: flex-end;
+        }
+        .chat-left {
+            justify-content: flex-start;
+        }
         .chat-message {
+            padding: 8px 12px;
+            border-radius: 15px;
+            word-wrap: break-word;
+        }
+        .chat-right .chat-message {
             background-color: #435ebe;
             color: white;
-            border-radius: 15px;
-            padding: 8px 15px;
-            margin-bottom: 10px;
-            max-width: 80%;
-            display: inline-block;
         }
-
         .chat-left .chat-message {
-            background-color: #697ecb;
+            background-color: #e9ecef;
+            color: #333;
         }
 
         .close-chat-btn {
@@ -605,7 +615,7 @@
                     </div>
                     <div class="name flex-grow-1">
                         <h6 class="mb-0">Admin</h6>
-                        <span class="text-xs">Online</span>
+                        <!-- <span class="text-xs">Online</span> -->
                     </div>
                     <button class="btn btn-sm close-chat-btn" id="closeChat">
                         <i class="bi bi-x"></i>
@@ -662,7 +672,7 @@
 
             function addMessage(message, isUser = true) {
                 const messageDiv = document.createElement('div');
-                messageDiv.className = isUser ? 'chat chat-left' : 'chat';
+                messageDiv.className = isUser ? 'chat chat-right' : 'chat chat-left';
                 messageDiv.innerHTML = `
                     <div class="chat-body">
                         <div class="chat-message">${message}</div>
@@ -734,6 +744,7 @@
             }
         });
     </script>
+    
 
   </body>
 </html>

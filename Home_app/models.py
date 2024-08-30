@@ -166,12 +166,23 @@ class ServiceRate(models.Model):
 
 
 
+from django.db.models import Q
+
 class ChatMessage(models.Model):
     sender = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='sent_messages')
+    receiver = models.ForeignKey(
+        Users, 
+        on_delete=models.CASCADE, 
+        related_name='received_messages',
+        limit_choices_to=Q(usertype='admin'),
+        null=True,  # Allow null temporarily
+        default=None  # Set default to None
+    )
     message = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.sender.firstname}: {self.message[:50]}"
+
 
 

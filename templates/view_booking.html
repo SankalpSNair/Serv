@@ -469,6 +469,7 @@ body.modal-open {
                                 <th>Appointment Date</th>
                                 <!-- <th>Appointment Time</th>
                                 <th>Service Type</th> -->
+                                <th>Amount Payable</th>
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>
@@ -479,6 +480,7 @@ body.modal-open {
                                     <td>{{ booking.worker_type }}</td>
                                     <td>{{ booking.worker_id.firstname }} {{ booking.worker_id.lastname }}</td>
                                     <td>{{ booking.appointment_date }}</td>
+                                    <td>₹{{ booking.pay_amount }}</td>
                                     <td>{{ booking.status }}</td>
                                     <td class="action-buttons">
                                         {% if booking.status == 'Confirmed' %}

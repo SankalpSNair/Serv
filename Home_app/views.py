@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.shortcuts import render,HttpResponse,redirect,get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,login
@@ -14,7 +15,8 @@ from django.contrib.auth.tokens import default_token_generator
 from django.urls import reverse
 from .forms import CustomPasswordResetForm
 from django.contrib.auth.forms import SetPasswordForm
-from .models import Users,House_Maid,Skill,Carpenter,Electrician,Plumber,Home_Nurse,Booking,ServiceRate,ChatMessage
+from .models import Users,House_Maid,Skill,Carpenter,Electrician,Plumber,Home_Nurse,Booking,ServiceRate,ChatMessage,Payments
+
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.hashers import check_password
 from django.shortcuts import render, redirect
@@ -22,7 +24,7 @@ from django.contrib import messages
 from .models import Plumber, Users, Skill
 from django.core.files.storage import default_storage
 from django.contrib import messages
-from django.http import JsonResponse
+from django.http import HttpResponseBadRequest, JsonResponse
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Max
@@ -1201,11 +1203,15 @@ def view_bookings(request):
     # Fetch all bookings made by the logged-in user
     bookings = Booking.objects.filter(customer_id=user_id)
 
+    # Fetch payment status for each booking
+    for booking in bookings:
+        payment = Payments.objects.filter(booking_id=booking).first()
+        booking.payment_status = payment.status if payment else 'Pending'
+
     context = {
         'bookings': bookings
     }
     return render(request, 'view_booking.html', context)
-
 @never_cache
 def view_services(request):
     user_id = request.session.get('user_id')
@@ -1806,6 +1812,7 @@ def adm_send_message(request, user_id):
     
     return redirect('admin_view_chat', user_id=user_id)
 
+
 from django.views.decorators.http import require_GET
 @require_GET
 def check_user_status(request):
@@ -1818,4 +1825,135 @@ def check_user_status(request):
 
 
 
+import razorpay
+logger = logging.getLogger(__name__)
+
+def create_payment(request, booking_id):
+    logger.debug(f"create_payment called with booking_id: {booking_id}")
+    
+    booking = get_object_or_404(Booking, id=booking_id)
+    logger.debug(f"Booking retrieved: {booking}")
+    
+    if booking.pay_amount is None:
+        booking.calculate_pay_amount()
+    amount = booking.pay_amount
+    logger.debug(f"Amount to be paid: {amount}")
+
+    client = razorpay.Client(auth=(settings.RAZORPAY_API_KEY, settings.RAZORPAY_API_SECRET_KEY))
+    logger.debug("Razorpay client initialized")
+    
+    order_data = {
+        'amount': int(amount * 100),  # Amount in paise
+        'currency': 'INR',
+        'payment_capture': '1'
+    }
+    logger.debug(f"Order data prepared: {order_data}")
+    
+    try:
+        order = client.order.create(order_data)
+        logger.debug(f"Order created: {order}")
+    except Exception as e:
+        logger.error(f"Error creating order: {e}")
+        return JsonResponse({'success': False, 'error': str(e)})
+    
+    payment = Payments.objects.create(
+        booking_id=booking,
+        amount=amount,
+        order_id=order['id']
+    )
+    logger.debug(f"Payment created: {payment}")
+
+    context = {
+        'order_id': order['id'],
+        'razorpay_key': settings.RAZORPAY_API_KEY,
+        'amount': amount,
+        'booking': booking,
+        'payment': payment,
+        'payment_id': payment.razorpay_id
+    }
+    logger.debug(f"Context prepared: {context}")
+
+    return JsonResponse({
+        'success': True,
+        'payment_url': reverse('payment_page', kwargs={'payment_id': payment.payment_id})
+    })
+
+def payment_success(request):
+    return render(request, 'payment_success.html')
+
+def payment_failed(request):
+    return render(request, 'payment_failed.html')
+
+def verify_payment(request, payment_id):
+    payment = get_object_or_404(Payments, payment_id=payment_id)
+    client = razorpay.Client(auth=(settings.RAZORPAY_API_KEY, settings.RAZORPAY_API_SECRET_KEY))
+
+    if request.method == "POST":
+        try:
+            params_dict = {
+                'razorpay_order_id': request.POST.get('razorpay_order_id'),
+                'razorpay_payment_id': request.POST.get('razorpay_payment_id'),
+                'razorpay_signature': request.POST.get('razorpay_signature')
+            }
+
+            client.utility.verify_payment_signature(params_dict)
+            payment.razorpay_id = params_dict['razorpay_payment_id']
+            payment.status = 'completed'
+            payment.save()
+
+            # Update the booking status
+            booking = payment.booking_id
+            booking.status = 'Paid'
+            booking.save()
+
+            return redirect('payment_success')
+
+        except razorpay.errors.SignatureVerificationError:
+            payment.status = 'failed'
+            payment.save()
+            return redirect('payment_failed')
+
+    return render(request, 'payment_failed.html')
+
+@csrf_exempt
+def payment_callback(request):
+    if request.method == "POST":
+        client = razorpay.Client(auth=(settings.RAZORPAY_API_KEY, settings.RAZORPAY_API_SECRET_KEY))
+        
+        try:
+            params_dict = {
+                'razorpay_payment_id': request.POST['razorpay_payment_id'],
+                'razorpay_order_id': request.POST['razorpay_order_id'],
+                'razorpay_signature': request.POST['razorpay_signature']
+            }
+
+            client.utility.verify_payment_signature(params_dict)
+
+            payment = Payments.objects.get(order_id=params_dict['razorpay_order_id'])
+            payment.payment_id = params_dict['razorpay_payment_id']
+            payment.status = 'completed'
+            payment.save()
+
+            booking = payment.booking_id
+            booking.status = 'Paid'
+            booking.save()
+
+            return redirect('payment_success')
+
+        except razorpay.errors.SignatureVerificationError:
+            return redirect('payment_failed')
+    
+    return HttpResponseBadRequest()
+
+def payment_page(request, payment_id):
+    payment = get_object_or_404(Payments, payment_id=payment_id)
+    context = {
+        'order_id': payment.order_id,
+        'razorpay_key': settings.RAZORPAY_API_KEY,
+        'amount': payment.amount,
+        'booking': payment.booking_id,
+        'payment': payment,
+        'payment_id': payment.payment_id
+    }
+    return render(request, 'payment_page.html', context)
 

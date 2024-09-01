@@ -479,19 +479,21 @@ body.modal-open {
                                     <td>{{ booking.worker_type }}</td>
                                     <td>{{ booking.worker_id.firstname }} {{ booking.worker_id.lastname }}</td>
                                     <td>{{ booking.appointment_date }}</td>
-                                    <!-- <td>{{ booking.appointment_time }}</td>
-                                    <td>{{ booking.service_type }}</td> -->
                                     <td>{{ booking.status }}</td>
                                     <td class="action-buttons">
                                         {% if booking.status == 'Confirmed' %}
                                             <button class="btn btn-sm btn-info" data-toggle="modal" data-target="#detailsModal{{ booking.id }}">Details</button>
                                         {% endif %}
-                                        {% if booking.status == 'Pending' or booking.status == 'Paid' %}
+                                        {% if booking.status == 'Pending' %}
                                             <button class="btn btn-sm btn-success make-payment-btn" data-booking-id="{{ booking.id }}">Make Payment</button>
+                                            <button class="btn btn-sm btn-danger cancel-booking-btn" data-booking-id="{{ booking.id }}">Cancel</button>
+                                        {% elif booking.status == 'Paid' %}
+                                            <button class="btn btn-sm btn-success" disabled>Paid</button>
                                             <button class="btn btn-sm btn-danger cancel-booking-btn" data-booking-id="{{ booking.id }}">Cancel</button>
                                         {% endif %}
                                     </td>
                                 </tr>
+                            
                                 
                                 <!-- Modal for booking details -->
                                 <div class="modal fade" id="detailsModal{{ booking.id }}" tabindex="-1" role="dialog" aria-labelledby="detailsModalLabel{{ booking.id }}" aria-hidden="true">
@@ -633,25 +635,24 @@ body.modal-open {
 
             // Simulate payment process
             setTimeout(function() {
-                // Simulating an AJAX call to update the booking status
+                // Simulating an AJAX call to create the payment
                 $.ajax({
-                    url: '{% url "update_booking_status" %}',
-                    method: 'POST',
-                    data: {
-                        booking_id: bookingId,
-                        status: 'Paid'
-                    },
+                    url: '{% url "create_payment" booking_id=0 %}'.replace('0', bookingId),
+                    method: 'GET',
                     success: function(response) {
+                        console.log('Payment initiation response:', response);
                         if (response.success) {
-                            alert('Payment successful! Booking status updated to Paid.');
+                            alert('Payment process initiated successfully!');
                             location.reload(); // Reload the page to reflect the changes
                         } else {
-                            alert('Error updating booking status. Please try again.');
+                            alert('Error initiating payment. Please try again.');
                             $button.prop('disabled', false).text('Make Payment');
                         }
                     },
-                    error: function() {
-                        alert('Error processing payment. Please try again.');
+                    error: function(xhr, status, error) {
+                        console.error('Error initiating payment:', status, error);
+                        console.error('Response:', xhr.responseText);
+                        alert('Error initiating payment. Please try again.');
                         $button.prop('disabled', false).text('Make Payment');
                     }
                 });
@@ -678,6 +679,7 @@ body.modal-open {
                         status: 'Cancelled'
                     },
                     success: function(response) {
+                        console.log('Cancellation response:', response);
                         if (response.success) {
                             alert('Booking cancelled successfully.');
                             location.reload(); // Reload the page to reflect the changes
@@ -686,7 +688,9 @@ body.modal-open {
                             $button.prop('disabled', false).text('Cancel');
                         }
                     },
-                    error: function() {
+                    error: function(xhr, status, error) {
+                        console.error('Error cancelling booking:', status, error);
+                        console.error('Response:', xhr.responseText);
                         alert('Error cancelling booking. Please try again.');
                         $button.prop('disabled', false).text('Cancel');
                     }

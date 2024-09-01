@@ -178,4 +178,6 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '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'
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Use database-backed sessions
 SESSION_COOKIE_SECURE = False  # Set to True for HTTPS
 
-
+RAZORPAY_API_KEY = 'rzp_test_Q16TA7WvW93Ile'
+RAZORPAY_API_SECRET_KEY = 'kDbKUnWN7G9LQTznXOXMIPv5'
+CSRF_TRUSTED_ORIGINS = ['https://api.razorpay.com']

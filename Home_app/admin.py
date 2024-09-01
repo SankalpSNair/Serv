@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Users,Skill,House_Maid,Home_Nurse,Carpenter,Electrician,Plumber,Booking,ServiceRate,ChatMessage
+from .models import Users,Skill,House_Maid,Home_Nurse,Carpenter,Electrician,Plumber,Booking,ServiceRate,ChatMessage,Payments
+
 
 
 # Register your models here.
@@ -13,3 +14,5 @@ admin.site.register(Plumber)
 admin.site.register(Booking)
 admin.site.register(ServiceRate)
 admin.site.register(ChatMessage)
+admin.site.register(Payments)
+

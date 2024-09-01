@@ -70,6 +70,14 @@ urlpatterns = [
     path('send_message/', views.send_message, name='send_message'),
     path('get_messages/', views.get_messages, name='get_messages'),
     
+
+    path('create-payment/<int:booking_id>/', views.create_payment, name='create_payment'),
+    # path('verify-payment/<int:payment_id>/', views.verify_payment, name='verify_payment'),
+    path('verify-payment/<int:payment_id>/', views.verify_payment, name='verify_payment'),
+    path('payment-success/', views.payment_success, name='payment_success'),
+    path('payment-failed/', views.payment_failed, name='payment_failed'),
+    path('payment-callback/', views.payment_callback, name='payment_callback'),
+    path('payment_page/<str:payment_id>/', views.payment_page, name='payment_page'),
 #customer side end
 
 #worker side start

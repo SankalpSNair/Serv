@@ -16,8 +16,11 @@ urlpatterns = [
     path('social-auth/', include('social_django.urls', namespace='social')),
 
 # admin side start
-
+    path('api/district-bookings/', views.district_bookings, name='district_bookings'),
+    path('api/monthly-bookings/<int:year>/', views.monthly_bookings, name='monthly_bookings'),
+    path('api/district-bookings/', views.district_bookings, name='district_bookings'),
     path('dashboard/', views.DashboardPage, name='dashboard'),
+    path('monthly_bookings/<int:year>/', views.monthly_bookings, name='monthly_bookings'),
     path('full_users/', views.Full_usersPage, name='full_users'),
     path('full_customers/', views.Full_customersPage, name='full_customers'),
     path('full_workers/', views.Full_workersPage, name='full_workers'),
@@ -66,6 +69,7 @@ urlpatterns = [
     path('users-email-search/', views.usersemailsearch, name='useremailsearch'),
     path('search-book-status/', views.searchbookstatus, name='searchbookstatus'),
     path('update_booking_status/', views.update_booking_status, name='update_booking_status'),
+    path('update_worker_booking_status/', views.update_worker_booking_status, name='update_worker_booking_status'),
 
     path('send_message/', views.send_message, name='send_message'),
     path('get_messages/', views.get_messages, name='get_messages'),

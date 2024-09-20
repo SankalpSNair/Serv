@@ -75,9 +75,9 @@
             display: inline;
         
         }
-        html, body {
+        /* html, body {
             overflow: hidden;
-        }
+        } */
     </style>
     <style>
         /* General styles for the profile section */
@@ -329,8 +329,15 @@ input, optgroup, select, textarea {
                                     <input type="date" id="appointment_date" name="appointment_date" class="form-control" required min="{{ today_date }}">
                                 </div>
                                 <div class="form-group">
-                                    <label for="appointment_time">Appointment Time:</label>
-                                    <input type="time" id="appointment_time" name="appointment_time" class="form-control" required>
+                                    <label for="appointment_start_time">Start Time:</label>
+                                    <input type="time" id="appointment_start_time" name="appointment_start_time" class="form-control" required
+                                           min="06:00" max="18:00" step="1800">
+                                           <br><span>The totat time may include travelling time also..</span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="appointment_end_time">End Time:</label>
+                                    <input type="time" id="appointment_end_time" name="appointment_end_time" class="form-control" required
+                                           min="06:00" max="18:00" step="1800">
                                 </div>
                                 <div class="form-group">
                                     <label for="service_type">Service Type:</label>
@@ -354,13 +361,9 @@ input, optgroup, select, textarea {
                                     <label for="address">Address:</label>
                                     <textarea id="address" name="address" rows="3" class="form-control" required></textarea>
                                 </div>
-                                <div class="form-group">
-                                    <label for="hours_booked">Number of Hours:</label>
-                                    <input type="number" id="hours_booked" name="hours_booked" min="1" max="8" value="1" class="form-control" required>
-                                </div>
-                                <div class="form-group">
+                                <div class="form-group full-width text-center">
                                     <p>Hourly Rate: ₹{{ hourly_rate }}</p>
-                                    <p>Estimated Total: ₹<span id="estimated_total">{{ hourly_rate }}</span></p>
+                                    <p>Estimated Total: ₹<span id="estimated_total">0.00</span></p>
                                 </div>
                             </div>
                             <div class="text-center mt-4">
@@ -406,36 +409,52 @@ input, optgroup, select, textarea {
     <!-- Global Init -->
     <script src="{% static 'assets/js/custom.js' %}"></script>
     <script>
-        // JavaScript to enforce time constraints
+    
         document.querySelector('form').addEventListener('submit', function (e) {
-            var timeInput = document.getElementById('appointment_time');
-            var timeValue = timeInput.value;
-    
-            if (timeValue) {
-                var timeParts = timeValue.split(':');
-                var hours = parseInt(timeParts[0], 10);
-    
-                if (hours < 6 || hours >= 18) {
+            var startTimeInput = document.getElementById('appointment_start_time');
+            var endTimeInput = document.getElementById('appointment_end_time');
+            var startTime = startTimeInput.value;
+            var endTime = endTimeInput.value;
+
+            if (startTime && endTime) {
+                if (endTime <= startTime) {
                     e.preventDefault(); // Prevent form submission
-                    alert('The appointment time must be between 06:00 and 18:00.');
-                    timeInput.focus();
+                    alert('The end time must be after the start time.');
+                    return;
                 }
             }
         });
-    
-        // Set the minimum date to today and the maximum date to one and a half years from today
-        var today = new Date();
-        var maxDate = new Date();
-        maxDate.setFullYear(today.getFullYear(), today.getMonth() + 18);
-    
-        document.getElementById('appointment_date').setAttribute('min', today.toISOString().split('T')[0]);
-        document.getElementById('appointment_date').setAttribute('max', maxDate.toISOString().split('T')[0]);
+</script>
+<script>
+        // Calculate and update the estimated total
+        function updateEstimatedTotal() {
+            var startTime = document.getElementById('appointment_start_time').value;
+            var endTime = document.getElementById('appointment_end_time').value;
 
-        document.getElementById('hours_booked').addEventListener('input', function() {
-            var hours = this.value;
-            var rate = {{ hourly_rate }};
-            var total = (hours * rate).toFixed(2);
-            document.getElementById('estimated_total').textContent = total;
+            if (startTime && endTime) {
+                var start = new Date('1970-01-01T' + startTime + 'Z');
+                var end = new Date('1970-01-01T' + endTime + 'Z');
+                var diff = (end - start) / 3600000; // Difference in hours
+                var rate = {{ hourly_rate }};
+                var total = (diff * rate).toFixed(2);
+                document.getElementById('estimated_total').textContent = total;
+            } else {
+                document.getElementById('estimated_total').textContent = '0.00';
+            }
+        }
+
+        document.getElementById('appointment_start_time').addEventListener('change', updateEstimatedTotal);
+        document.getElementById('appointment_end_time').addEventListener('change', updateEstimatedTotal);
+
+        // Ensure end time is always after start time
+        document.getElementById('appointment_start_time').addEventListener('change', function() {
+            var startTime = this.value;
+            var endTimeInput = document.getElementById('appointment_end_time');
+            endTimeInput.min = startTime;
+            if (endTimeInput.value <= startTime) {
+                endTimeInput.value = '';
+            }
+            updateEstimatedTotal();
         });
     </script>
 

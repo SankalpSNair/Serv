@@ -34,6 +34,48 @@ from .import models
 
 # -------------------------  ADMIN SIDE ----------------------------- #
 
+from django.http import JsonResponse
+from django.db.models import Count
+from django.db.models.functions import ExtractMonth
+from .models import Booking  # Import your Booking model
+from django.views.decorators.http import require_GET
+
+@require_GET
+def monthly_bookings(request, year):
+    bookings = Booking.objects.filter(appointment_date__year=year)
+    monthly_data = bookings.annotate(month=ExtractMonth('appointment_date')) \
+                           .values('month') \
+                           .annotate(count=Count('id')) \
+                           .order_by('month')
+    
+    # Initialize a list with zeros for all 12 months
+    data = [0] * 12
+    
+    # Fill in the actual booking counts
+    for item in monthly_data:
+        data[item['month'] - 1] = item['count']
+    
+    return JsonResponse(data, safe=False)
+
+def district_bookings(request):
+    district_data = (
+        Booking.objects.select_related('customer_id')
+        .values('customer_id__district')
+        .annotate(count=Count('id'))
+        .filter(customer_id__district__isnull=False)
+        .order_by('-count')
+    )
+    
+    labels = [item['customer_id__district'] for item in district_data]
+    values = [item['count'] for item in district_data]
+    
+    return JsonResponse({'labels': labels, 'values': values})
+
+
+from django.db.models import Count, Max
+from django.db.models.functions import TruncMonth
+from django.utils import timezone
+
 def DashboardPage(request):
     total_users = Users.objects.count()  # Total number of users
     total_customers = Users.objects.filter(usertype='customer').count()  # Total number of customers
@@ -41,7 +83,7 @@ def DashboardPage(request):
     total_bookings = Booking.objects.count()  # Total number of bookings
     
     # Get the most recent message from each unique sender
-    recent_messages = ChatMessage.objects.values('sender').annotate(
+    recent_messages = ChatMessage.objects.exclude(sender_id=22).values('sender').annotate(
         max_timestamp=Max('timestamp')
     ).order_by('-max_timestamp')[:5]
 
@@ -51,12 +93,26 @@ def DashboardPage(request):
         for item in recent_messages
     ]
 
+    # Get monthly bookings data for the current year
+    current_year = timezone.now().year
+    monthly_bookings = Booking.objects.filter(appointment_date__year=current_year) \
+        .annotate(month=TruncMonth('appointment_date')) \
+        .values('month') \
+        .annotate(count=Count('id')) \
+        .order_by('month')
+    
+    # Create a list of 12 elements (one for each month) with booking counts
+    booking_counts = [0] * 12
+    for item in monthly_bookings:
+        booking_counts[item['month'].month - 1] = item['count']
+
     context = {
         'total_users': total_users,
         'total_customers': total_customers,
         'total_workers': total_workers,
         'total_bookings': total_bookings,
-        'recent_messages': recent_messages
+        'recent_messages': recent_messages,
+        'monthly_bookings': booking_counts
     }
     
     return render(request, 'admin_temp/dashboard.html', context)
@@ -1087,24 +1143,38 @@ def custom_password_reset_confirm(request, uidb64, token):
 def custom_password_reset_done(request):
     return render(request, 'registration/password_reset_done.html')
 
+
+from datetime import datetime
 @never_cache
 def view_maids(request):
-    # Get all unique districts from the Maid model
     districts = House_Maid.objects.values_list('district', flat=True).distinct()
     
-    # Get the selected district from the query parameters
     selected_district = request.GET.get('district', '')
-    
-    # Filter maids based on the selected district
-    if selected_district:
-        maids = House_Maid.objects.filter(district=selected_district)
-    else:
-        maids = House_Maid.objects.all()
+    selected_date = request.GET.get('available_date', '')
+  
+    maids = House_Maid.objects.all()
+   
+    if selected_district and selected_district != "Search by district":
+        maids = maids.filter(district=selected_district)
+
+    if selected_date:
+        try:
+            date_obj = datetime.strptime(selected_date, '%Y-%m-%d').date()
+            booked_worker_ids = Booking.objects.filter(
+                appointment_date=date_obj,
+                worker_type='House Maid'
+            ).values_list('worker_id', flat=True)
+            
+            maids = maids.exclude(user_id__in=booked_worker_ids)
+        except ValueError:
+            # Handle invalid date format
+            pass
     
     context = {
         'maids': maids,
         'districts': districts,
         'selected_district': selected_district,
+        'selected_date': selected_date,
     }
     return render(request, 'view_maids.html', context)
 
@@ -1250,9 +1320,18 @@ def book_service(request, maid_id):
     
     if request.method == 'POST':
         appointment_date = request.POST.get('appointment_date')
-        appointment_time = request.POST.get('appointment_time')
+        appointment_start_time = request.POST.get('appointment_start_time')
+        appointment_end_time = request.POST.get('appointment_end_time')
         address = request.POST.get('address')
-        hours_booked = Decimal(request.POST.get('hours_booked', 1))
+        service_type = request.POST.get('service_type')
+        phone = request.POST.get('phone')
+        description = request.POST.get('description')
+        
+        # Calculate hours booked
+        start_time = datetime.strptime(appointment_start_time, '%H:%M')
+        end_time = datetime.strptime(appointment_end_time, '%H:%M')
+        duration = end_time - start_time
+        hours_booked = duration.total_seconds() / 3600  # Convert to hours
         
         # Fetch the customer (logged-in user) or return an error if not found
         try:
@@ -1260,15 +1339,18 @@ def book_service(request, maid_id):
             
             # Create and save the booking
             booking = Booking(
-                worker_id=maid.user_id,  # Use maid's user_id as the worker
-                worker_type='House Maid',  # Correct worker type
+                worker_id=maid.user_id,
+                worker_type='House Maid',
                 customer_id=customer,
                 appointment_date=appointment_date,
-                appointment_time=appointment_time,
+                appointment_time=appointment_start_time,
+                end_time=appointment_end_time,
                 address=address,
-                status='Pending',  # Default status
-                service_type='house_maid',
-                hours_booked=hours_booked,
+                status='Pending',
+                service_type=service_type,
+                hours_booked=Decimal(hours_booked),
+                phone=phone,
+                description=description
             )
             booking.save()
             
@@ -1285,6 +1367,7 @@ def book_service(request, maid_id):
     context = {
         'maid': maid,
         'hourly_rate': ServiceRate.objects.get(service_type='house_maid').hourly_rate,
+        'today_date': datetime.now().date(),
     }
     return render(request, 'registration/book_service.html', context)
 
@@ -1556,6 +1639,27 @@ def update_booking_status(request):
         return JsonResponse({'success': False, 'error': 'Booking not found'})
     
 
+from django.http import JsonResponse
+from .models import Booking
+import json
+
+
+def update_worker_booking_status(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            booking_id = data.get('booking_id')
+            print(f"Received booking ID: {booking_id}")  # Log booking ID
+
+            booking = Booking.objects.get(id=booking_id)
+            booking.status = 'Completed'
+            booking.save()
+            return JsonResponse({'success': True})
+        except Booking.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Booking not found'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    return JsonResponse({'success': False, 'error': 'Invalid request'})
 # ------------------WORKER Views----------------------
 
 @never_cache
@@ -1655,6 +1759,7 @@ def worker_profile(request):
     
     
 from django.db.models import F
+
 def view_my_booking(request):
     user_id = request.session.get('user_id')
 
@@ -1668,8 +1773,11 @@ def view_my_booking(request):
         messages.error(request, 'User not found.')
         return redirect('login')
 
-    # Fetch bookings for the logged-in worker with customer details
-    bookings = Booking.objects.filter(worker_id=worker.user_id).select_related('customer_id').annotate(
+    # Fetch bookings for the logged-in worker with customer details and status 'Paid'
+    bookings = Booking.objects.filter(
+        worker_id=worker.user_id,
+        status__in=['Paid', 'Completed']  # Use __in to filter by multiple statuses
+    ).select_related('customer_id').annotate(
         customer_firstname=F('customer_id__firstname'),
         customer_lastname=F('customer_id__lastname'),
         customer_email=F('customer_id__email'),
@@ -1746,7 +1854,7 @@ def admin_new_chat(request):
     # Fetch the most recent message from each unique sender
     messages = ChatMessage.objects.filter(
         id=Subquery(latest_messages)
-    ).select_related('sender').order_by('-timestamp')[:20]
+    ).exclude(sender_id=22).select_related('sender').order_by('-timestamp')[:20]
     
     context = {
         'messages': messages,
@@ -1828,63 +1936,59 @@ def check_user_status(request):
 import razorpay
 logger = logging.getLogger(__name__)
 
+from django.shortcuts import redirect  # Ensure you import redirect
+
+import logging
+logger = logging.getLogger(__name__)
+
 def create_payment(request, booking_id):
     logger.debug(f"create_payment called with booking_id: {booking_id}")
     
-    booking = get_object_or_404(Booking, id=booking_id)
-    logger.debug(f"Booking retrieved: {booking}")
-    
-    if booking.pay_amount is None:
-        booking.calculate_pay_amount()
-    amount = booking.pay_amount
-    logger.debug(f"Amount to be paid: {amount}")
-
-    client = razorpay.Client(auth=(settings.RAZORPAY_API_KEY, settings.RAZORPAY_API_SECRET_KEY))
-    logger.debug("Razorpay client initialized")
-    
-    order_data = {
-        'amount': int(amount * 100),  # Amount in paise
-        'currency': 'INR',
-        'payment_capture': '1'
-    }
-    logger.debug(f"Order data prepared: {order_data}")
-    
     try:
+        booking = get_object_or_404(Booking, id=booking_id)
+        logger.debug(f"Booking retrieved: {booking}")
+        
+        service_rate = ServiceRate.objects.get(service_type=booking.service_type)
+        if booking.pay_amount is None:
+            booking.calculate_pay_amount()
+        
+        amount = booking.pay_amount
+        logger.debug(f"Amount to be paid: {amount}")
+
+        client = razorpay.Client(auth=(settings.RAZORPAY_API_KEY, settings.RAZORPAY_API_SECRET_KEY))
+        logger.debug("Razorpay client initialized")
+        
+        order_data = {
+            'amount': int(amount * 100),  # Amount in paise
+            'currency': 'INR',
+            'payment_capture': '1'
+        }
+        logger.debug(f"Order data prepared: {order_data}")
+        
         order = client.order.create(order_data)
         logger.debug(f"Order created: {order}")
-    except Exception as e:
-        logger.error(f"Error creating order: {e}")
-        return JsonResponse({'success': False, 'error': str(e)})
+        
+        payment = Payments.objects.create(
+            booking_id=booking,
+            amount=amount,
+            order_id=order['id']
+        )
+        logger.debug(f"Payment created: {payment}")
+
+        return redirect('payment_page', payment_id=payment.payment_id)
     
-    payment = Payments.objects.create(
-        booking_id=booking,
-        amount=amount,
-        order_id=order['id']
-    )
-    logger.debug(f"Payment created: {payment}")
+    except ServiceRate.DoesNotExist:
+        logger.error(f"ServiceRate does not exist for service type: {booking.service_type}")
+        messages.error(request, 'Service rate not found for the specified service type.')
+    except Exception as e:
+        logger.error(f"Error in create_payment: {str(e)}")
+        messages.error(request, 'An error occurred while creating the payment.')
+    
+    return redirect('view_bookings')  # Redirect to bookings page if there's an error
 
-    context = {
-        'order_id': order['id'],
-        'razorpay_key': settings.RAZORPAY_API_KEY,
-        'amount': amount,
-        'booking': booking,
-        'payment': payment,
-        'payment_id': payment.razorpay_id
-    }
-    logger.debug(f"Context prepared: {context}")
-
-    return JsonResponse({
-        'success': True,
-        'payment_url': reverse('payment_page', kwargs={'payment_id': payment.payment_id})
-    })
-
-def payment_success(request):
-    return render(request, 'payment_success.html')
-
-def payment_failed(request):
-    return render(request, 'payment_failed.html')
-
+@csrf_exempt
 def verify_payment(request, payment_id):
+    logger.debug(f"verify_payment called with payment_id: {payment_id}")
     payment = get_object_or_404(Payments, payment_id=payment_id)
     client = razorpay.Client(auth=(settings.RAZORPAY_API_KEY, settings.RAZORPAY_API_SECRET_KEY))
 
@@ -1901,22 +2005,27 @@ def verify_payment(request, payment_id):
             payment.status = 'completed'
             payment.save()
 
-            # Update the booking status
             booking = payment.booking_id
             booking.status = 'Paid'
             booking.save()
 
+            logger.info(f"Payment verified successfully: {payment.payment_id}")
             return redirect('payment_success')
 
         except razorpay.errors.SignatureVerificationError:
+            logger.error(f"Payment signature verification failed: {payment.payment_id}")
             payment.status = 'failed'
             payment.save()
+            return redirect('payment_failed')
+        except Exception as e:
+            logger.error(f"Error in verify_payment: {str(e)}")
             return redirect('payment_failed')
 
     return render(request, 'payment_failed.html')
 
 @csrf_exempt
 def payment_callback(request):
+    logger.debug("payment_callback called")
     if request.method == "POST":
         client = razorpay.Client(auth=(settings.RAZORPAY_API_KEY, settings.RAZORPAY_API_SECRET_KEY))
         
@@ -1938,14 +2047,20 @@ def payment_callback(request):
             booking.status = 'Paid'
             booking.save()
 
+            logger.info(f"Payment callback successful: {payment.payment_id}")
             return redirect('payment_success')
 
         except razorpay.errors.SignatureVerificationError:
+            logger.error(f"Payment callback signature verification failed")
+            return redirect('payment_failed')
+        except Exception as e:
+            logger.error(f"Error in payment_callback: {str(e)}")
             return redirect('payment_failed')
     
     return HttpResponseBadRequest()
 
 def payment_page(request, payment_id):
+    logger.debug(f"payment_page called with payment_id: {payment_id}")
     payment = get_object_or_404(Payments, payment_id=payment_id)
     context = {
         'order_id': payment.order_id,
@@ -1955,5 +2070,11 @@ def payment_page(request, payment_id):
         'payment': payment,
         'payment_id': payment.payment_id
     }
+    logger.debug(f"Payment page context: {context}")  # Add this line
     return render(request, 'payment_page.html', context)
 
+def payment_success(request):
+    return render(request, 'payment_success.html')
+
+def payment_failed(request):
+    return render(request, 'payment_failed.html')

@@ -155,8 +155,8 @@
                       <th>Date</th>
                       <th>Time</th>
                       <th>Service Type</th>
-                      <th>Status</th>
                       <th>Details</th>
+                      <th>Work_Status</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -166,10 +166,14 @@
                         <td>{{ booking.appointment_date }}</td>
                         <td>{{ booking.appointment_time }}</td>
                         <td>{{ booking.worker_type }}</td>
-                        <td>{{ booking.status }}</td>
                         <td>
                           <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#bookingModal{{ booking.id }}">
                             View Details
+                          </button>
+                        </td>
+                        <td>
+                          <button type="button" class="btn btn-sm btn-success" onclick="updateStatus(this, '{{ booking.id }}')">
+                            {{ booking.status }}
                           </button>
                         </td>
                       </tr>
@@ -240,6 +244,37 @@
 
   <!-- Main JS File -->
   <script src="{% static 'work_assets/js/main.js' %}"></script>
+
+  <script>
+    function updateStatus(button, bookingId) {
+      console.log('Updating status for booking ID:', bookingId); // Log booking ID
+      console.log('Current status:', button.textContent); // Log current status
+
+      fetch("{% url 'update_worker_booking_status' %}", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': '{{ csrf_token }}'  // Ensure CSRF token is included
+        },
+        body: JSON.stringify({ booking_id: bookingId, status: button.textContent }) // Include current status
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          button.textContent = 'Completed';
+          button.classList.remove('btn-success');
+          button.classList.add('btn-secondary');
+          button.disabled = true;
+        } else {
+          alert('Failed to update status: ' + data.error);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while updating the status.');
+      });
+    }
+  </script>
 
 </body>
 

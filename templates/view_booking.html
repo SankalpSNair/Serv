@@ -373,7 +373,15 @@ input, optgroup, select, textarea {
 body.modal-open {
     overflow: hidden;
 }
+body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
 
+    .footer {
+        margin-top: auto; /* Push footer to the bottom */
+    }   
 /* ... (rest of the styles remain unchanged) ... */
 
     </style>
@@ -487,7 +495,7 @@ body.modal-open {
                                             <button class="btn btn-sm btn-info" data-toggle="modal" data-target="#detailsModal{{ booking.id }}">Details</button>
                                         {% endif %}
                                         {% if booking.status == 'Pending' %}
-                                            <button class="btn btn-sm btn-success make-payment-btn" data-booking-id="{{ booking.id }}">Make Payment</button>
+                                        <a href="{% url 'create_payment' booking_id=booking.id %}" class="btn btn-sm btn-success">Make Payment</a>
                                             <button class="btn btn-sm btn-danger cancel-booking-btn" data-booking-id="{{ booking.id }}">Cancel</button>
                                         {% elif booking.status == 'Paid' %}
                                             <button class="btn btn-sm btn-success" disabled>Paid</button>
@@ -626,40 +634,6 @@ body.modal-open {
             }
         });
 
-        // Attach click event to make payment buttons
-        $('.make-payment-btn').on('click', function(e) {
-            e.preventDefault();
-            var bookingId = $(this).data('booking-id');
-            var $button = $(this);
-
-            // Disable the button and change text
-            $button.prop('disabled', true).text('Processing...');
-
-            // Simulate payment process
-            setTimeout(function() {
-                // Simulating an AJAX call to create the payment
-                $.ajax({
-                    url: '{% url "create_payment" booking_id=0 %}'.replace('0', bookingId),
-                    method: 'GET',
-                    success: function(response) {
-                        console.log('Payment initiation response:', response);
-                        if (response.success) {
-                            alert('Payment process initiated successfully!');
-                            location.reload(); // Reload the page to reflect the changes
-                        } else {
-                            alert('Error initiating payment. Please try again.');
-                            $button.prop('disabled', false).text('Make Payment');
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error initiating payment:', status, error);
-                        console.error('Response:', xhr.responseText);
-                        alert('Error initiating payment. Please try again.');
-                        $button.prop('disabled', false).text('Make Payment');
-                    }
-                });
-            }, 2000); // Simulate 2 seconds of processing time
-        });
 
         // Attach click event to cancel buttons
         $('.cancel-booking-btn').on('click', function(e) {

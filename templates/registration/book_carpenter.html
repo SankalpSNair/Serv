@@ -349,6 +349,14 @@ input, optgroup, select, textarea {
                                     <label for="address">Address:</label>
                                     <textarea id="address" name="address" rows="3" class="form-control" required></textarea>
                                 </div>
+                                <div class="form-group full-width">
+                                    <label for="hours_booked">Number of Hours:</label>
+                                    <input type="number" id="hours_booked" name="hours_booked" min="1" max="8" value="1" class="form-control" required>
+                                </div>
+                                <div class="form-group full-width text-center">
+                                    <p>Hourly Rate: ₹{{ hourly_rate }}</p>
+                                    <p>Estimated Total: ₹<span id="estimated_total">{{ hourly_rate }}</span></p>
+                                </div>
                             </div>
                             <div class="text-center mt-4">
                                 <button type="submit" class="btn btn-primary btn-lg">Request Booking</button>
@@ -417,6 +425,13 @@ input, optgroup, select, textarea {
     
         document.getElementById('appointment_date').setAttribute('min', today.toISOString().split('T')[0]);
         document.getElementById('appointment_date').setAttribute('max', maxDate.toISOString().split('T')[0]);
+
+        document.getElementById('hours_booked').addEventListener('input', function() {
+            var hours = this.value;
+            var rate = {{ hourly_rate }};
+            var total = (hours * rate).toFixed(2);
+            document.getElementById('estimated_total').textContent = total;
+        });
     </script>
     
 

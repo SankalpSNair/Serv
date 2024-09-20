@@ -242,12 +242,13 @@
                 <form action="" method="get">
                     <div class="select-wrapper">
                         <select class="search-bar" name="district">
-                            <option value="Search by district">All District</option>
+                            <option value="Search by district">All Districts</option>
                             {% for district in districts %}
                                 <option value="{{ district }}" {% if selected_district == district %}selected{% endif %}>{{ district }}</option>
                             {% endfor %}
                         </select>
                     </div>
+                    <input type="date" name="available_date" value="{{ selected_date }}">
                     <button type="submit" class="search-button">Search</button>
                 </form>
             </div>

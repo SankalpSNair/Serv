@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Users,Skill,House_Maid,Home_Nurse,Carpenter,Electrician,Plumber,Booking,ServiceRate,ChatMessage,Payments
+from .models import Users,Skill,House_Maid,Home_Nurse,Carpenter,Electrician,Plumber,Booking,ServiceRate,ChatMessage,Payments,WorkerVerification
 
 
 
@@ -15,4 +15,4 @@ admin.site.register(Booking)
 admin.site.register(ServiceRate)
 admin.site.register(ChatMessage)
 admin.site.register(Payments)
-
+admin.site.register(WorkerVerification)

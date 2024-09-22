@@ -1792,19 +1792,22 @@ def view_my_booking(request):
 
 
 
+
+
 import base64
-import cv2
 import numpy as np
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from deepface import DeepFace
 from .models import Users
 from django.shortcuts import get_object_or_404, render
+from django.urls import reverse
+import io
+from PIL import Image
 
 @csrf_exempt
 def worker_verification(request):
     if request.method == 'GET':
-        # Render the verification page
         return render(request, 'worker_temp/verification.html')
     
     elif request.method == 'POST':
@@ -1812,36 +1815,42 @@ def worker_verification(request):
         if not user_id:
             return JsonResponse({'success': False, 'message': 'User not logged in'})
 
-        # Get the captured image data
         captured_image = request.POST.get('captured_image')
         
         if not captured_image:
             return JsonResponse({'success': False, 'message': 'No image data received'})
         
-        # Remove the data URL prefix
-        _, captured_image = captured_image.split(',', 1)
-        
-        # Convert base64 string to numpy array
-        captured_image = base64.b64decode(captured_image)
-        captured_image = np.frombuffer(captured_image, dtype=np.uint8)
-        captured_image = cv2.imdecode(captured_image, cv2.IMREAD_COLOR)
-        
-        # Get the worker's reference image
-        user = get_object_or_404(Users, user_id=user_id)
-        if not user.image:
-            return JsonResponse({'success': False, 'message': 'No profile image found for this user'})
-
-        reference_image = cv2.imread(user.image.path)
-        
         try:
+            # Remove the data URL prefix
+            _, captured_image = captured_image.split(',', 1)
+            
+            # Convert base64 string to image
+            captured_image = base64.b64decode(captured_image)
+            captured_image = Image.open(io.BytesIO(captured_image))
+            
+            # Convert PIL Image to numpy array
+            captured_image = np.array(captured_image)
+            
+            # Get the worker's reference image
+            user = get_object_or_404(Users, user_id=user_id)
+            if not user.image:
+                return JsonResponse({'success': False, 'message': 'No profile image found for this user'})
+
+            reference_image = Image.open(user.image.path)
+            reference_image = np.array(reference_image)
+            
             # Perform facial verification
             result = DeepFace.verify(captured_image, reference_image, enforce_detection=False)
             
             if result['verified']:
-                # Update user's verification status (you might want to add a field for this in your Users model)
-                user.is_verified = True  # Assuming you have this field in your Users model
+                # Update user's verification status
+                user.is_verified = True
                 user.save()
-                return JsonResponse({'success': True, 'message': 'Verification successful'})
+                return JsonResponse({
+                    'success': True, 
+                    'message': 'Verification successful',
+                    'redirect_url': reverse('worker_index')
+                })
             else:
                 return JsonResponse({'success': False, 'message': 'Verification failed'})
         except Exception as e:
@@ -2136,3 +2145,25 @@ def payment_success(request):
 
 def payment_failed(request):
     return render(request, 'payment_failed.html')
+
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib import messages
+from django.utils import timezone
+from .models import WorkerVerification, Users
+
+def is_admin(user):
+    return user.is_authenticated and user.is_staff
+
+@login_required
+@user_passes_test(is_admin)
+def view_verification(request):
+    # Fetch all worker verifications, ordered by submission date
+    verifications = WorkerVerification.objects.all().order_by('-submitted_at')
+
+    context = {
+        'verifications': verifications,
+    }
+
+    return render(request, 'admin_temp/worker_verification.html', context)

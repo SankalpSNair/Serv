@@ -34,6 +34,12 @@
       height: auto;
     }
   </style>
+
+  <!-- Add SweetAlert2 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+
+  <!-- Add SweetAlert2 JS -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body class="verification-page">
@@ -177,18 +183,38 @@
         const result = await response.json();
         if (response.ok) {
           if (result.success) {
-            alert('Verification successful!');
-            // Redirect to a success page or update UI as needed
+            Swal.fire({
+              icon: 'success',
+              title: 'Success!',
+              text: 'Verification successful!',
+            }).then(() => {
+              // Redirect to the worker index page
+              if (result.redirect_url) {
+                window.location.href = result.redirect_url;
+              }
+            });
           } else {
-            alert(result.message || 'Verification failed. Please try again.');
+            Swal.fire({
+              icon: 'error',
+              title: 'Verification Failed',
+              text: result.message || 'Please try again.',
+            });
           }
         } else {
           console.error('Server error:', result);
-          alert(`Server error: ${result.message || 'Unknown error occurred'}`);
+          Swal.fire({
+            icon: 'error',
+            title: 'Server Error',
+            text: result.message || 'An unknown error occurred.',
+          });
         }
       } catch (error) {
         console.error('Error during verification:', error);
-        alert('An error occurred during verification. Please try again.');
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'An error occurred during verification. Please try again.',
+        });
       }
     });
   </script>

@@ -90,6 +90,7 @@ urlpatterns = [
     path('worker/profile/', views.worker_profile, name='worker_profile'),
     path('worker/bookings/', views.view_my_booking, name='view_my_booking'),
     path('verification/', views.worker_verification, name='worker_verification'),
+    path('view-verification/', views.view_verification, name='view_verification'),
 #worker side end
 
 ] 

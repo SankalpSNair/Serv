@@ -24,9 +24,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-vxeml(p&2*z6r7%&9@1!pqb67b#6@k43eqf(xbr%ue(m5bh2e#'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'serv-1b6m.onrender.com',
+    'localhost',
+    '127.0.0.1',
+    '.onrender.com',  # Allows all subdomains of onrender.com
+]
 
 
 # Application definition
@@ -180,4 +185,7 @@ SESSION_COOKIE_SECURE = False  # Set to True for HTTPS
 
 RAZORPAY_API_KEY = 'rzp_test_Q16TA7WvW93Ile'
 RAZORPAY_API_SECRET_KEY = 'kDbKUnWN7G9LQTznXOXMIPv5'
-CSRF_TRUSTED_ORIGINS = ['https://api.razorpay.com']
+CSRF_TRUSTED_ORIGINS = ['https://api.razorpay.com',
+                        'https://serv-1b6m.onrender.com',
+                        'https://*.onrender.com',
+                        ]
